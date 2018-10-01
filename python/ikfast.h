@@ -34,6 +34,7 @@
 #include <list>
 #include <stdexcept>
 #include <cmath>
+#include <iostream>
 
 #ifndef IKFAST_HEADER_COMMON
 #define IKFAST_HEADER_COMMON
@@ -57,6 +58,12 @@ public:
     unsigned char jointtype; ///< joint type, 0x01 is revolute, 0x11 is slider
     unsigned char maxsolutions; ///< max possible indices, 0 if controlled by free index or a free joint itself
     unsigned char indices[5]; ///< unique index of the solution used to keep track on what part it came from. sometimes a solution can be repeated for different indices. store at least another repeated root
+
+    virtual void Print() const {
+      std::cout << "(" << ((jointtype == 0x01) ? "R" : "P") << ", "
+                << (int)freeind << "), " << foffset << ", "
+                << fmul << std::endl;
+    }
 };
 
 /// \brief The discrete solutions are returned in this structure.
@@ -228,6 +235,15 @@ public:
         }
     }
 
+    virtual void Print() const {
+      std::cout << std::setprecision(16);
+      unsigned int i = 0;
+      for (const auto& s : _vbasesol) {
+        std::cout << i++ << ": ";
+        s.Print();
+      }
+    }
+
     std::vector< IkSingleDOFSolutionBase<T> > _vbasesol;       ///< solution and their offsets if joints are mimiced
     std::vector<int> _vfree;
 };
@@ -260,6 +276,15 @@ public:
 
     virtual void Clear() {
         _listsolutions.clear();
+    }
+
+    virtual void Print() const {
+      unsigned int i = 0;      
+      for (const auto& solution : _listsolutions) {
+        std::cout << "Solution " << i++ << ":" << std::endl;
+        std::cout << "===========" << std::endl;
+        solution.Print();
+      }
     }
 
 protected:
