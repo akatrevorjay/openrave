@@ -35,6 +35,7 @@
 #include <stdexcept>
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 
 #ifndef IKFAST_HEADER_COMMON
 #define IKFAST_HEADER_COMMON
