@@ -693,6 +693,12 @@ protected:
 
     virtual bool SolveAll(const IkParameterization& rawparam, int filteroptions, std::vector<IkReturnPtr>& vikreturns)
     {
+        {
+          stringstream ss;
+          ss << endl << " Start calling SolveAll" << endl;  
+          RAVELOG_INFO(ss.str());        
+        }
+        
         vikreturns.resize(0);
         IkParameterization ikparamdummy;
         const IkParameterization& param = _ConvertIkParameterization(rawparam, ikparamdummy);
@@ -715,11 +721,24 @@ protected:
             return false;
         }
         _SortSolutions(probot, vikreturns);
+
+        {
+          stringstream ss;
+          ss << endl << "Finish calling SolveAll" << endl;  
+          RAVELOG_INFO(ss.str());        
+        }        
+        
         return vikreturns.size()>0;
     }
 
     virtual bool Solve(const IkParameterization& rawparam, const std::vector<dReal>& q0, const std::vector<dReal>& vFreeParameters, int filteroptions, IkReturnPtr ikreturn)
     {
+        {
+          stringstream ss;
+          ss << endl << " Start calling Solve" << endl;  
+          RAVELOG_INFO(ss.str());        
+        }
+        
         IkParameterization ikparamdummy;
         const IkParameterization& param = _ConvertIkParameterization(rawparam, ikparamdummy);
         if( vFreeParameters.size() != _vfreeparams.size() ) {
@@ -742,11 +761,23 @@ protected:
         if( !!ikreturn ) {
             ikreturn->_action = retaction;
         }
+
+        {
+          stringstream ss;
+          ss << endl << "Finish calling Solve" << endl;  
+          RAVELOG_INFO(ss.str());        
+        }        
         return retaction==IKRA_Success;
     }
 
     virtual bool SolveAll(const IkParameterization& rawparam, const std::vector<dReal>& vFreeParameters, int filteroptions, std::vector<IkReturnPtr>& vikreturns)
     {
+        {
+          stringstream ss;
+          ss << endl << " Start calling SolveAll" << endl;  
+          RAVELOG_INFO(ss.str());        
+        }
+        
         vikreturns.resize(0);
         IkParameterization ikparamdummy;
         const IkParameterization& param = _ConvertIkParameterization(rawparam, ikparamdummy);
@@ -768,6 +799,11 @@ protected:
             return false;
         }
         _SortSolutions(probot, vikreturns);
+        {
+          stringstream ss;
+          ss << endl << "Finish calling SolveAll" << endl;  
+          RAVELOG_INFO(ss.str());        
+        }        
         return vikreturns.size()>0;
     }
 
@@ -2018,6 +2054,24 @@ protected:
 
     IkReturnAction _SolveAll(const IkParameterization& param, const vector<IkReal>& vfree, int filteroptions, std::vector<IkReturnPtr>& vikreturns, StateCheckEndEffector& stateCheck)
     {
+      {
+        stringstream ss;
+        ss << endl << " Start calling _SolveAll" << endl;
+        ss << "std::vector<double> vfree = ";
+        FOREACH(it, vfree) {
+          ss << *it << ", ";
+        }
+        ss << endl;
+        ss << "filteroptions = " << filteroptions << endl;
+        // ss << "std::vector<IkReturnPtr>& vikreturns = ";
+        // FOREACH(it, vikreturns) {
+        //   ss << *it << ", ";
+        // }
+        // ss << endl;
+        RAVELOG_INFO(ss.str());
+      }
+            
+      
         RobotBase::ManipulatorPtr pmanip(_pmanip);
         RobotBasePtr probot = pmanip->GetRobot();
         ikfast::IkSolutionList<IkReal> solutions;
@@ -2044,17 +2098,33 @@ protected:
                       RAVELOG_INFO(ss.str());
                     }
                     if( retaction & IKRA_Quit) {
+                      {
+                        stringstream ss;
+                        ss << "_SolveAll returns here: " << retaction;
+                        RAVELOG_INFO(ss.str());
+                      }                      
                         return retaction;
                     }
                 }
                 else {
                     IkReturnAction retaction = _ValidateSolutionAll(param, iksol, vector<IkReal>(), filteroptions, sol, vikreturns, stateCheck);
                     if( retaction & IKRA_Quit ) {
+                      {
+                        stringstream ss;
+                        ss << "_SolveAll returns here: " << retaction;
+                        RAVELOG_INFO(ss.str());
+                      }                      
                         return retaction;
                     }
                 }
             }
         }
+
+        {
+          stringstream ss;
+          ss << "_SolveAll returns here: " << IKRA_Reject;
+          RAVELOG_INFO(ss.str());
+        }        
         return IKRA_Reject; // signals to continue
     }
 

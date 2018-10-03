@@ -1227,7 +1227,7 @@ public:
                     {
                       stringstream ss;
                       ss << endl << " After calling FindIKSolution (failure)" << endl;
-                      RAVELOG_INFO(ss.str());        
+                      RAVELOG_INFO(ss.str());
                     }
                   
                     if( !bnoiksolution ) {
@@ -1291,6 +1291,19 @@ public:
                 // test all possible solutions
                 robot->SetActiveDOFValues(vrand, false);
                 pmanip->FindIKSolutions(twrist, viksolutions, filteroptions);
+
+                {
+                  stringstream ss;                
+                  FOREACH(itsoln, viksolutions) {
+                    FOREACH(it, *itsoln)
+                    {
+                      ss << *it << " ";
+                    }
+                    ss << endl;
+                  }
+                  RAVELOG_INFO(ss.str());                  
+                }
+                
                 if( vfreeparameters_real.size() > 0 ) {
                     pmanip->FindIKSolutions(twrist, vfreeparameters_real, viksolutions2, filteroptions);
                     viksolutions.insert(viksolutions.end(),viksolutions2.begin(),viksolutions2.end());
