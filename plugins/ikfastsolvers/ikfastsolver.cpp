@@ -1427,48 +1427,32 @@ protected:
 
     IkReturnAction _SolveSingle(const IkParameterization& param, const vector<IkReal>& vfree, const vector<dReal>& q0, int filteroptions, IkReturnPtr ikreturn, StateCheckEndEffector& stateCheck)
     {
-        {
-          stringstream ss;
-          ss << endl << " Start calling _SolveSingle" << endl;
-          ss << "std::vector<double> vfree = ";
-          FOREACH(it, vfree) {
-            ss << *it << ", ";
-          }
-          ss << endl;
-          ss << "std::vector<double> q0 = ";
-          FOREACH(it, q0) {
-            ss << *it << ", ";
-          }
-          ss << endl;
-          RAVELOG_INFO(ss.str());
-        }
-      
+      _IKFAST_DISPLAY(cout << endl << " Start of _SolveSingle" << endl;
+                      cout << "std::vector<double> vfree = ";
+                      FOREACH(it, vfree) {
+                        cout << *it << ", ";
+                      }
+                      cout << endl;
+                      cout << "std::vector<double> q0 = ";
+                      FOREACH(it, q0) {
+                        cout << *it << ", ";
+                      }
+                      cout << endl;
+        )
         RobotBase::ManipulatorPtr pmanip(_pmanip);
         ikfast::IkSolutionList<IkReal> solutions;
         Transform t = pmanip->GetLocalToolTransform();
 
-        {
-          stringstream ss;
-          ss << endl << "t = " << t;
-          ss << endl << "Before calling _CallIk" << endl;
-          RAVELOG_INFO(ss.str());
-        }
+      _IKFAST_DISPLAY(cout << endl << "t = " << t;
+                      cout << endl << "Before calling _CallIk" << endl;)
                 
         if( !_CallIk(param, vfree, t, solutions) ) {
-          {
-            stringstream ss;
-            ss << endl << " After calling _CallIk (failure)" << endl;
-            RAVELOG_INFO(ss.str());
-          }
+          _IKFAST_DISPLAY(cout << endl << " After calling _CallIk (failure)" << endl;)
           return IKRA_RejectKinematics;
         }
-
-        {
-          stringstream ss;
-          ss << endl << " After calling _CallIk (success)" << endl;
-          ss << endl << "Not returning IKRA_Success, yet" << endl;
-          RAVELOG_INFO(ss.str());
-        }
+        _IKFAST_DISPLAY(
+          cout << endl << " After calling _CallIk (success)" << endl << "Not returning IKRA_Success, yet" << endl;
+          )
 
         RobotBasePtr probot = pmanip->GetRobot();
         SolutionInfo bestsolution;
@@ -1507,6 +1491,8 @@ protected:
             }
         }
 
+        _IKFAST_DISPLAY();
+
         int allres = IKRA_Reject;
         IkParameterization paramnewglobal; // needs to be initialized by _ValidateSolutionSingle so we get most accurate result back
         FOREACH(itindex,vsolutionorder) {
@@ -1517,43 +1503,33 @@ protected:
                 int freeindex = iksol.GetFree().size();
                 vsolfree.resize(freeindex);
                 std::vector<dReal> vFreeInc(_GetFreeIncFromIndices(iksol.GetFree()));
-                {
-                  stringstream ss;                
-                  ss << endl << "Before calling CREEPY ComposeSolution";
-                  ss << endl << "int freeindex = " << freeindex;
-                  ss << endl << "std::vector<double> q0 = ";        
+
+                _IKFAST_DISPLAY(
+                  cout << endl << "Before calling CREEPY ComposeSolution";
+                  cout << endl << "int freeindex = " << freeindex;
+                  cout << endl << "std::vector<double> q0 = ";        
                   FOREACH(it, q0) {
-                    ss << *it << ", ";
+                    cout << *it << ", ";
                   }
-                  ss << endl << "std::vector<double> vsolfree = ";        
+                  cout << endl << "std::vector<double> vsolfree = ";        
                   FOREACH(it, vsolfree) {
-                    ss << *it << ", ";
+                    cout << *it << ", ";
                   }
-                  ss << endl;
-                  RAVELOG_INFO(ss.str());
-                }                 
+                  cout << endl;
+                  )
                 
                 res = ComposeSolution(iksol.GetFree(), vsolfree, 0, q0, boost::bind(&IkFastSolver::_ValidateSolutionSingle,shared_solver(), boost::ref(iksol), boost::ref(textra), boost::ref(sol), boost::ref(vravesol), boost::ref(bestsolution), boost::ref(param), boost::ref(stateCheck), boost::ref(paramnewglobal)), vFreeInc);
 
-                {
-                  stringstream ss;                
-                  ss << endl << " After calling CREEPY ComposeSolution" << endl;
-                  RAVELOG_INFO(ss.str());
-                }  
+                _IKFAST_DISPLAY(
+                  cout << endl << " After calling CREEPY ComposeSolution" << endl;)
             }
             else {
                 vsolfree.resize(0);
-                {
-                  stringstream ss;                
-                  ss << endl << "Before calling _ValidateSolutionSingle" << endl;
-                  RAVELOG_INFO(ss.str());
-                }                  
+                _IKFAST_DISPLAY(
+                  cout << endl << "Before calling _ValidateSolutionSingle" << endl;)
                 res = _ValidateSolutionSingle(iksol, textra, sol, vravesol, bestsolution, param, stateCheck, paramnewglobal);
-                {
-                  stringstream ss;                
-                  ss << endl << " After calling _ValidateSolutionSingle" << endl;
-                  RAVELOG_INFO(ss.str());
-                }                               
+                _IKFAST_DISPLAY(
+                  cout << endl << " After calling _ValidateSolutionSingle" << endl;)
             }
             allres |= res;
             if( res & IKRA_Quit ) {
@@ -1566,15 +1542,20 @@ protected:
             }
         }
 
+        _IKFAST_DISPLAY();
+
         // return as soon as a solution is found, since we're visiting phi's starting from q0, we are guaranteed
         // that the solution will be close (ie, phi's dominate in the search). This is to speed things up
         if( !!bestsolution.ikreturn ) {
             if( !!ikreturn ) {
                 *ikreturn = *bestsolution.ikreturn;
             }
+            _IKFAST_DISPLAY();
             _CallFinishCallbacks(bestsolution.ikreturn, pmanip, paramnewglobal);
+            _IKFAST_DISPLAY();
             return bestsolution.ikreturn->_action;
         }
+        _IKFAST_DISPLAY(cout << endl << " End of _SolveSingle" << endl;)        
         return static_cast<IkReturnAction>(allres);
     }
 
@@ -2049,7 +2030,8 @@ protected:
         ikfast::IkSolutionList<IkReal> solutions;
         if( _CallIk(param,vfree, pmanip->GetLocalToolTransform(), solutions) ) {
             vector<IkReal> vsolfree;
-            std::vector<IkReal> sol(pmanip->GetArmIndices().size());
+            unsigned int ninds = pmanip->GetArmIndices().size();
+            std::vector<IkReal> sol(ninds, 0);
             for(size_t isolution = 0; isolution < solutions.GetNumSolutions(); ++isolution) {
                 const ikfast::IkSolution<IkReal>& iksol = dynamic_cast<const ikfast::IkSolution<IkReal>& >(solutions.GetSolution(isolution));
                 iksol.Validate();
@@ -2057,7 +2039,8 @@ protected:
                 //RAVELOG_VERBOSE_FORMAT("ikfast solution %d/%d (free=%d)", isolution%solutions.GetNumSolutions()%iksol.GetFree().size());
                 if( iksol.GetFree().size() > 0 ) {
                     // have to search over all the free parameters of the solution!
-                    vsolfree.resize(iksol.GetFree().size());
+                    // vsolfree.resize(iksol.GetFree().size());
+                    vsolfree = vector<IkReal>(ninds, 0);
                     std::vector<dReal> vFreeInc(_GetFreeIncFromIndices(iksol.GetFree()));
                     _IKFAST_DISPLAY(cout << " iksol.GetFree() = "; PrintList(iksol.GetFree());
                                     cout << "        vFreeInc = "; PrintList(vFreeInc);
