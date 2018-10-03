@@ -971,21 +971,19 @@ protected:
             //RAVELOG_VERBOSE_FORMAT("index=%d curphi=%.16e, range=%.16e", freeindex%curphi%(upperChecked - lowerChecked));
             vfree.at(freeindex) = curphi;
 
-            {
-              stringstream ss;
-              ss << endl;
-              ss << "std::vector<double> q0 = ";        
+            _IKFAST_DISPLAY(
+              cout << endl;
+              cout << "std::vector<double> q0 = ";        
               FOREACH(it, q0) {
-                ss << *it << ", ";
+                cout << *it << ", ";
               }
-              ss << endl;
-              ss << "std::vector<double> vfree = ";
+              cout << endl;
+              cout << "std::vector<double> vfree = ";
               FOREACH(it, vfree) {
-                ss << *it << ", ";
+                cout << *it << ", ";
               }
-              ss << endl;
-              RAVELOG_INFO(ss.str());
-            }
+              cout << endl;
+              )
             IkReturnAction res = ComposeSolution(vfreeparams, vfree, freeindex+1,q0, fn, vFreeInc);
             if( !(res & IKRA_Reject) ) {
                 return res;
@@ -999,32 +997,27 @@ protected:
         // explicitly test 0 since many edge cases involve 0s
         if( !bIsZeroTested && _qlower[vfreeparams[freeindex]] <= 0 && _qupper[vfreeparams[freeindex]] >= 0 ) {
             vfree.at(freeindex) = 0;
-            {
-              stringstream ss;
-              ss << endl;
-              ss << "std::vector<double> q0 = ";        
-              FOREACH(it, q0) {
-                ss << *it << ", ";
-              }
-              ss << endl;
-              ss << "std::vector<double> vfree = ";
-              FOREACH(it, vfree) {
-                ss << *it << ", ";
-              }
-              ss << endl;
-              RAVELOG_INFO(ss.str());
-            }
+            _IKFAST_DISPLAY( cout << endl;
+                             cout << "std::vector<double> q0 = ";        
+                             FOREACH(it, q0) {
+                               cout << *it << ", ";
+                             }
+                             cout << endl;
+                             cout << "std::vector<double> vfree = ";
+                             FOREACH(it, vfree) {
+                               cout << *it << ", ";
+                             }
+                             cout << endl;
+              )
             IkReturnAction res = ComposeSolution(vfreeparams, vfree, freeindex+1,q0, fn, vFreeInc);
-            {
-              stringstream ss;
-              ss << endl;
-              ss << "std::vector<double> q0 = ";
+            _IKFAST_DISPLAY(
+              cout << endl;
+              cout << "std::vector<double> q0 = ";
               FOREACH(it, q0) {
-                ss << *it << ", ";
+                cout << *it << ", ";
               }
-              ss << endl;          
-              RAVELOG_INFO(ss.str());
-            }            
+              cout << endl;          
+              )          
             if( !(res & IKRA_Reject) ) {
                 return res;
             }
@@ -2037,7 +2030,7 @@ protected:
     IkReturnAction _SolveAll(const IkParameterization& param, const vector<IkReal>& vfree, int filteroptions, std::vector<IkReturnPtr>& vikreturns, StateCheckEndEffector& stateCheck)
     {
       _IKFAST_DISPLAY(
-        cout << " Start calling _SolveAll" << endl;
+        cout << "Start calling _SolveAll" << endl;
         cout << "std::vector<double> vfree = ";
         FOREACH(it, vfree) {
           cout << *it << ", ";
@@ -2090,11 +2083,7 @@ protected:
             }
         }
 
-        {
-          stringstream ss;
-          ss << "_SolveAll returns here: " << IKRA_Reject;
-          RAVELOG_INFO(ss.str());
-        }        
+        _IKFAST_DISPLAY(cout << "_SolveAll returns here: " << IKRA_Reject;)
         return IKRA_Reject; // signals to continue
     }
 
