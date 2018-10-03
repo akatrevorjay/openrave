@@ -1495,7 +1495,7 @@ protected:
                 std::vector<dReal> vFreeInc(_GetFreeIncFromIndices(iksol.GetFree()));
 
                 _IKFAST_DISPLAY(
-                  cout << endl << "Before calling CREEPY ComposeSolution";
+                  cout << "Before calling CREEPY ComposeSolution";
                   cout << endl << "int freeindex = " << freeindex;
                   cout << endl << "std::vector<double> q0 = ";        
                   FOREACH(it, q0) {
@@ -1511,15 +1511,15 @@ protected:
                 res = ComposeSolution(iksol.GetFree(), vsolfree, 0, q0, boost::bind(&IkFastSolver::_ValidateSolutionSingle,shared_solver(), boost::ref(iksol), boost::ref(textra), boost::ref(sol), boost::ref(vravesol), boost::ref(bestsolution), boost::ref(param), boost::ref(stateCheck), boost::ref(paramnewglobal)), vFreeInc);
 
                 _IKFAST_DISPLAY(
-                  cout << endl << " After calling CREEPY ComposeSolution" << endl;)
+                  cout << " After calling CREEPY ComposeSolution" << endl;)
             }
             else {
                 vsolfree.resize(0);
                 _IKFAST_DISPLAY(
-                  cout << endl << "Before calling _ValidateSolutionSingle" << endl;)
+                  cout << "Before calling _ValidateSolutionSingle" << endl;)
                 res = _ValidateSolutionSingle(iksol, textra, sol, vravesol, bestsolution, param, stateCheck, paramnewglobal);
                 _IKFAST_DISPLAY(
-                  cout << endl << " After calling _ValidateSolutionSingle" << endl;)
+                  cout << "After calling _ValidateSolutionSingle" << endl;)
             }
             allres |= res;
             if( res & IKRA_Quit ) {

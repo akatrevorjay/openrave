@@ -1209,23 +1209,20 @@ public:
                 bool bsuccess = true;
                 bool bnoiksolution = false;
                 
-                {
-                  stringstream ss;
-                  ss << endl << " Before calling FindIKSolution" << endl;
-                  ss << "twrist = " << twrist << endl;
-                  ss << "viksolution = ";
+                _IKFAST_DISPLAY(cout << endl << " Before calling FindIKSolution" << endl;
+                  cout << "twrist = " << twrist << endl;
+                  cout << "viksolution = ";
                   FOREACH(it, viksolution) {
-                    ss << *it << ", ";
+                    cout << *it << ", ";
                   }
-                  ss << endl;
-                  ss << "filteroptions = " << filteroptions << endl;
-                  ss << endl << "std::vector<double> viksolution = ";        
+                  cout << endl;
+                  cout << "filteroptions = " << filteroptions << endl;
+                  cout << endl << "std::vector<double> viksolution = ";        
                   FOREACH(it, viksolution) {
-                    ss << *it << ", ";
+                    cout << *it << ", ";
                   }
-                  ss << endl;                          
-                  RAVELOG_INFO(ss.str());
-                }
+                  cout << endl;
+                  )
                 
                 bool findiksolutionsuccess = pmanip->FindIKSolution(twrist, viksolution, filteroptions);
                 if( !findiksolutionsuccess ) {
