@@ -939,7 +939,9 @@ class InverseKinematicsModel(DatabaseGenerator):
                         libraries = None
                         if self.statistics.get('usinglapack',False) or not iswindows:
                             libraries = ['lapack']
+                        """
                         compiler.link_shared_object(objectfiles,output_filename=output_filename, libraries=libraries)
+                        """
                     except distutils.errors.LinkError,e:
                         log.warn(e)
                         if libraries is not None and 'lapack' in libraries:
