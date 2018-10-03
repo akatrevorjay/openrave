@@ -1120,15 +1120,17 @@ public:
                     }
                 }
 
-                {
-                  stringstream ss;
-                  ss << endl << "vrealsolution = ";
+                _IKFAST_DISPLAY(cout << "vrealsolution = ";
                   FOREACH(it, vrealsolution) {
-                    ss << *it << ", ";
+                    while(*it <= -M_PI) {
+                      *it += 2.0*M_PI;
+                    }
+                    while(*it > M_PI) {
+                      *it -= 2.0*M_PI;
+                    }                    
                   }
-                  ss << endl;
-                  RAVELOG_INFO(ss.str());
-                }
+                  PrintList(vrealsolution);
+                  )
 
                 robot->SetActiveDOFValues(vrealsolution,false);
                 robot->SetReferenceIKSolution(vrealsolution);

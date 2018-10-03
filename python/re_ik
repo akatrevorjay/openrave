@@ -8,4 +8,4 @@ cp $CURR_IKFAST_DIR/databases/*.py $OPENRAVE_DIR/databases
 
 clear && clear
 openrave.py --database inversekinematics \
-                   --robot=$MUJIN_JHBUILD_CHECKOUT_DIR/openrave/src/robots/barrettsegway.robot.xml --iktests=1 --usecached
+                   --robot=$MUJIN_JHBUILD_CHECKOUT_DIR/openrave/src/robots/barrettsegway.robot.xml --iktests=10 --usecached
