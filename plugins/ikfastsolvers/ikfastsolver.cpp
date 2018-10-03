@@ -2059,9 +2059,11 @@ protected:
                     // have to search over all the free parameters of the solution!
                     vsolfree.resize(iksol.GetFree().size());
                     std::vector<dReal> vFreeInc(_GetFreeIncFromIndices(iksol.GetFree()));
-                    _IKFAST_DISPLAY(cout << "iksol.GetFree() = "; PrintList(iksol.GetFree());
-                                    cout << "       vFreeInc = "; PrintList(vFreeInc);
-                                    cout << "          iksol = "; iksol.Print();
+                    _IKFAST_DISPLAY(cout << " iksol.GetFree() = "; PrintList(iksol.GetFree());
+                                    cout << "        vFreeInc = "; PrintList(vFreeInc);
+                                    cout << "vsolfree = vfree = "; PrintList(vsolfree);                                    
+                                    cout << "           iksol = "; iksol.Print();
+                                    cout << "             sol = "; PrintList(sol);
                     )
                     
                     IkReturnAction retaction = ComposeSolution(iksol.GetFree(), vsolfree, 0, vector<dReal>(), boost::bind(&IkFastSolver::_ValidateSolutionAll,shared_solver(), boost::ref(param), boost::ref(iksol), boost::ref(vsolfree), filteroptions, boost::ref(sol), boost::ref(vikreturns), boost::ref(stateCheck)), vFreeInc);
@@ -2079,6 +2081,9 @@ protected:
                     }
                 }
                 else {
+                    _IKFAST_DISPLAY(cout << "iksol = "; iksol.Print();
+                                    cout << "  sol = "; PrintList(sol);
+                      )
                     IkReturnAction retaction = _ValidateSolutionAll(param, iksol, vector<IkReal>(), filteroptions, sol, vikreturns, stateCheck);
                     if( retaction & IKRA_Quit ) {
                       _IKFAST_DISPLAY(cout << "_SolveAll returns here: " << retaction;)
@@ -2094,13 +2099,15 @@ protected:
 
     IkReturnAction _ValidateSolutionAll(const IkParameterization& param, const ikfast::IkSolution<IkReal>& iksol, const vector<IkReal>& vfree, int filteroptions, std::vector<IkReal>& sol, std::vector<IkReturnPtr>& vikreturns, StateCheckEndEffector& stateCheck)
     {
-      _IKFAST_DISPLAY(cout << "Start of _ValidateSolutionAll";)
+      _IKFAST_DISPLAY(cout << "Start of _ValidateSolutionAll";
+                      iksol.Print();
+                      cout << "   vfree = "; PrintList(vfree);          
+                      cout << "     sol = "; PrintList(sol);
+        )
         iksol.GetSolution(sol, vfree);
-        std::vector<dReal> vravesol(sol.size());
+        std::vector<dReal> vravesol(sol.size(), 0);
         std::copy(sol.begin(),sol.end(),vravesol.begin());
         _IKFAST_DISPLAY(
-          iksol.Print();
-          cout << "   vfree = "; PrintList(vfree);          
           cout << "     sol = "; PrintList(sol);
           cout << "vravesol = "; PrintList(vravesol);
           )
