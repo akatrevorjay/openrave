@@ -1005,11 +1005,24 @@ public:
         stringstream soutik, sinputik; sinputik << "SetIkThreshold 1000";
         pmanip->GetIkSolver()->SendCommand(soutik,sinputik);
 
-        vector<dReal> vrealsolution(pmanip->GetArmIndices().size(),0), vrand(pmanip->GetArmIndices().size(),0);
+        vector<int> indices = pmanip->GetArmIndices();
+        unsigned int ninds = indices.size();
+        vector<dReal> vrealsolution(ninds, 0), vrand(ninds, 0);
+        
+        {
+          stringstream ss;
+          ss << endl << "indices = ";
+          FOREACH(it, indices) {
+            ss << *it << ", ";
+          }
+          ss << endl;
+          RAVELOG_INFO(ss.str());
+        }        
+
         vector<dReal> vlowerlimit, vupperlimit, viksolution;
         vector< vector<dReal> > viksolutions, viksolutions2;
 
-        robot->SetActiveDOFs(pmanip->GetArmIndices());
+        robot->SetActiveDOFs(indices);
         robot->GetActiveDOFLimits(vlowerlimit, vupperlimit);
         // shrink the limits to prevent solutions close to limits from returning errors
         for(size_t i = 0; i < vlowerlimit.size(); ++i) {
@@ -1104,7 +1117,18 @@ public:
                     }
                 }
 
+                {
+                  stringstream ss;
+                  ss << endl << "vrealsolution = ";
+                  FOREACH(it, vrealsolution) {
+                    ss << *it << ", ";
+                  }
+                  ss << endl;
+                  RAVELOG_INFO(ss.str());
+                }
+
                 robot->SetActiveDOFValues(vrealsolution,false);
+                robot->SetReferenceIKSolution(vrealsolution);
                 if( itiktype->first == IKP_Lookat3D) {
                     twrist.SetLookat3D(Vector(RaveRandomFloat()-0.5,RaveRandomFloat()-0.5,RaveRandomFloat()-0.5)*10);
                     twrist = pmanip->GetIkParameterization(twrist);
@@ -1116,6 +1140,14 @@ public:
                 else {
                     twrist = pmanip->GetIkParameterization(itiktype->first);
                 }
+
+                {
+                  stringstream ss;
+                  ss << endl << "itiktype->first = " << itiktype->first;
+                  ss << endl << "twrist = ";
+                  ss << twrist << endl;
+                  RAVELOG_INFO(ss.str());
+                }                
 
                 if( jacobianthreshold > 0 ) {
                     // compute the jacobian and get its determinant
@@ -1171,7 +1203,33 @@ public:
 
                 bool bsuccess = true;
                 bool bnoiksolution = false;
-                if( !pmanip->FindIKSolution(twrist, viksolution, filteroptions) ) {
+                
+                {
+                  stringstream ss;
+                  ss << endl << " Before calling FindIKSolution" << endl;
+                  ss << "twrist = " << twrist << endl;
+                  ss << "viksolution = ";
+                  FOREACH(it, viksolution) {
+                    ss << *it << ", ";
+                  }
+                  ss << endl;
+                  ss << "filteroptions = " << filteroptions << endl;
+                  ss << endl << "std::vector<double> viksolution = ";        
+                  FOREACH(it, viksolution) {
+                    ss << *it << ", ";
+                  }
+                  ss << endl;                          
+                  RAVELOG_INFO(ss.str());
+                }
+                
+                bool findiksolutionsuccess = pmanip->FindIKSolution(twrist, viksolution, filteroptions);
+                if( !findiksolutionsuccess ) {
+                    {
+                      stringstream ss;
+                      ss << endl << " After calling FindIKSolution (failure)" << endl;
+                      RAVELOG_INFO(ss.str());        
+                    }
+                  
                     if( !bnoiksolution ) {
                         vnosolutions.push_back(make_pair(twrist,vfreeparameters));
                         bnoiksolution = true;
@@ -1192,6 +1250,12 @@ public:
                     RAVELOG_WARN(s.str());
                 }
                 else {
+                    {
+                      stringstream ss;
+                      ss << endl << "Finish calling FindIKSolution (success)" << endl;
+                      RAVELOG_INFO(ss.str());        
+                    }
+                  
                     robot->SetActiveDOFValues(viksolution,false);
                     twrist_out = pmanip->GetIkParameterization(twrist);
                     if( !pmanip->GetIkSolver()->GetFreeParameters(vfreeparameters_out) ) {

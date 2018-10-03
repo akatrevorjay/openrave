@@ -770,6 +770,11 @@ private:
         return GetActiveDOFJerkLimits(v);
     }
 
+    // TGN's IKFast++ requires    
+    virtual void SetReferenceIKSolution(const std::vector<dReal>& vrefiksolution) {
+      _vrefiksolution = vrefiksolution;
+    }
+
     /// computes the configuration difference q1-q2 and stores it in q1. Takes into account joint limits and circular joints
     virtual void SubtractActiveDOFValues(std::vector<dReal>& q1, const std::vector<dReal>& q2) const;
 
@@ -784,6 +789,9 @@ private:
     virtual void SetActiveManipulator(ManipulatorConstPtr pmanip);
     virtual ManipulatorPtr GetActiveManipulator();
     virtual ManipulatorConstPtr GetActiveManipulator() const;
+
+    // TGN's IKFast++ requires    
+    virtual const std::vector<dReal>& GetReferenceIKSolution() const { return _vrefiksolution; }
 
     /// \brief adds a manipulator the list
     ///
@@ -978,6 +986,8 @@ private:
     }
     mutable std::string __hashrobotstructure;
     mutable std::vector<dReal> _vTempRobotJoints;
+    // TGN's IKFast++ requires
+    mutable std::vector<dReal> _vrefiksolution;    
 
 #ifdef RAVE_PRIVATE
 #ifdef _MSC_VER

@@ -188,8 +188,33 @@ bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, vect
     return FindIKSolution(goal, vector<dReal>(), solution, filteroptions);
 }
 
+// TGN: this can be
+/* bool RobotBase::Manipulator::FindIKSolution(
+                                               const IkParameterization& goal,
+                                               vector<dReal>& solution,
+                                               int filteroptions,
+                                               const std::vector<dReal>& vFreeParameters = std::vector<dReal>()
+                                               ) const;
+*/
+
 bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, const std::vector<dReal>& vFreeParameters, vector<dReal>& solution, int filteroptions) const
 {
+    {
+      stringstream ss;
+      ss << endl << " Start calling FindIKSolution" << endl;
+      ss << "std::vector<double> vFreeParameters = ";
+      FOREACH(it, vFreeParameters) {
+        ss << *it << ", ";
+      }
+      ss << endl;
+      ss << "std::vector<double> solution = ";
+      FOREACH(it, solution) {
+        ss << *it << ", ";
+      }
+      ss << endl;
+      RAVELOG_INFO(ss.str());        
+    }  
+  
     IkSolverBasePtr pIkSolver = GetIkSolver();
     OPENRAVE_ASSERT_FORMAT(!!pIkSolver, "manipulator %s:%s does not have an IK solver set",RobotBasePtr(__probot)->GetName()%GetName(),ORE_Failed);
     RobotBasePtr probot = GetRobot();
@@ -207,13 +232,47 @@ bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, cons
         localgoal=goal;
     }
     boost::shared_ptr< vector<dReal> > psolution(&solution, utils::null_deleter());
-    return vFreeParameters.size() == 0 ? pIkSolver->Solve(localgoal, solution, filteroptions, psolution) : pIkSolver->Solve(localgoal, solution, vFreeParameters, filteroptions, psolution);
+
+    bool bool_return;
+    if(vFreeParameters.size() == 0) {
+      {
+        stringstream ss;
+        ss << endl << "Call Solve without vfreeparams" << endl;
+        RAVELOG_INFO(ss.str());        
+      }
+      bool_return = pIkSolver->Solve(localgoal, solution, filteroptions, psolution);
+    }
+    else {
+      {
+        stringstream ss;
+        ss << endl << "Call Solve without vfreeparams" << endl;
+        RAVELOG_INFO(ss.str());        
+      }      
+      bool_return = pIkSolver->Solve(localgoal, solution, vFreeParameters, filteroptions, psolution);
+    }
+
+    {
+      stringstream ss;
+      ss << endl << "Finish calling FindIKSolution" << endl;      
+      ss << "bool_return = " << bool_return << endl;
+      RAVELOG_INFO(ss.str());        
+    }            
+    return bool_return;
 }
 
 bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, std::vector<std::vector<dReal> >& solutions, int filteroptions) const
 {
     return FindIKSolutions(goal, vector<dReal>(), solutions, filteroptions);
 }
+
+// TGN: this can be
+/* bool RobotBase::Manipulator::FindIKSolutions(
+                                                const IkParameterization& goal,
+                                                vector<dReal>& solution,
+                                                int filteroptions,
+                                                const std::vector<dReal>& vFreeParameters = std::vector<dReal>()
+                                                ) const;
+*/
 
 bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, const std::vector<dReal>& vFreeParameters, std::vector<std::vector<dReal> >& solutions, int filteroptions) const
 {
@@ -227,7 +286,15 @@ bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, con
     else {
         localgoal=goal;
     }
-    return vFreeParameters.size() == 0 ? pIkSolver->SolveAll(localgoal,filteroptions,solutions) : pIkSolver->SolveAll(localgoal,vFreeParameters,filteroptions,solutions);
+
+    bool bool_return;
+    if( vFreeParameters.size() == 0 ) {
+      bool_return = pIkSolver->SolveAll(localgoal,filteroptions,solutions);
+    }
+    else {
+      bool_return = pIkSolver->SolveAll(localgoal, vFreeParameters, filteroptions, solutions);
+    }
+    return bool_return;
 }
 
 

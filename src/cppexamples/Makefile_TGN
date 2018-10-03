@@ -1,0 +1,18 @@
+CC = g++
+CXX = g++
+
+INSTALLPATH = /home/mujin/mujin/jhbuildapppickworker/install
+INSTALLINCLUDEPATH = $(INSTALLPATH)/include
+
+CXXFLAGS = -std=c++11 -Wall -DOPENRAVE_DLL -DOPENRAVE_CORE_DLL \
+         -I$(INSTALLINCLUDEPATH) \
+         -I$(INSTALLINCLUDEPATH)/openrave-0.11 \
+         -I/usr/include
+
+LDLIBS = -L/usr/lib/x86_64-linux-gnu -L$(INSTALLPATH)/lib
+
+LDFLAGS = -lopenrave0.11 -lopenrave0.11 -lopenrave0.11-core -lboost_thread -llog4cxx -lboost_system
+
+#DEBUGFLAGS = -Wl,-rpath,$(INSTALLPATH)/lib: -rdynamic
+
+ikfastloader : ikfastloader.cpp
