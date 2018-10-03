@@ -2030,7 +2030,7 @@ protected:
     IkReturnAction _SolveAll(const IkParameterization& param, const vector<IkReal>& vfree, int filteroptions, std::vector<IkReturnPtr>& vikreturns, StateCheckEndEffector& stateCheck)
     {
       _IKFAST_DISPLAY(
-        cout << "Start calling _SolveAll" << endl;
+        cout << "Start of _SolveAll" << endl;
         cout << "std::vector<double> vfree = ";
         FOREACH(it, vfree) {
           cout << *it << ", ";
@@ -2059,6 +2059,11 @@ protected:
                     // have to search over all the free parameters of the solution!
                     vsolfree.resize(iksol.GetFree().size());
                     std::vector<dReal> vFreeInc(_GetFreeIncFromIndices(iksol.GetFree()));
+                    _IKFAST_DISPLAY(cout << "iksol.GetFree() = "; PrintList(iksol.GetFree());
+                                    cout << "       vFreeInc = "; PrintList(vFreeInc);
+                                    cout << "          iksol = "; iksol.Print();
+                    )
+                    
                     IkReturnAction retaction = ComposeSolution(iksol.GetFree(), vsolfree, 0, vector<dReal>(), boost::bind(&IkFastSolver::_ValidateSolutionAll,shared_solver(), boost::ref(param), boost::ref(iksol), boost::ref(vsolfree), filteroptions, boost::ref(sol), boost::ref(vikreturns), boost::ref(stateCheck)), vFreeInc);
                     _IKFAST_DISPLAY(
                       cout << endl << "Before calling ComposeSolution with q0 = vector<dReal>()";        
@@ -2083,15 +2088,22 @@ protected:
             }
         }
 
-        _IKFAST_DISPLAY(cout << "_SolveAll returns here: " << IKRA_Reject;)
+        _IKFAST_DISPLAY(cout << "End of _SolveAll\n_SolveAll returns here: " << IKRA_Reject;)
         return IKRA_Reject; // signals to continue
     }
 
     IkReturnAction _ValidateSolutionAll(const IkParameterization& param, const ikfast::IkSolution<IkReal>& iksol, const vector<IkReal>& vfree, int filteroptions, std::vector<IkReal>& sol, std::vector<IkReturnPtr>& vikreturns, StateCheckEndEffector& stateCheck)
     {
-        iksol.GetSolution(sol,vfree);
+      _IKFAST_DISPLAY(cout << "Start of _ValidateSolutionAll";)
+        iksol.GetSolution(sol, vfree);
         std::vector<dReal> vravesol(sol.size());
         std::copy(sol.begin(),sol.end(),vravesol.begin());
+        _IKFAST_DISPLAY(
+          iksol.Print();
+          cout << "   vfree = "; PrintList(vfree);          
+          cout << "     sol = "; PrintList(sol);
+          cout << "vravesol = "; PrintList(vravesol);
+          )
 
         int nSameStateRepeatCount = 0;
         _nSameStateRepeatCount = 0;
@@ -2101,12 +2113,14 @@ protected:
         // find the first valid solutino that satisfies joint constraints and collisions
         if( !(filteroptions&IKFO_IgnoreJointLimits) ) {
             _ComputeAllSimilarJointAngles(vravesols, vravesol);
+            _IKFAST_DISPLAY(cout << "vravesol = "; PrintList(vravesol);)            
             if( vravesols.size() == 0 ) {
                 return IKRA_RejectJointLimits;
             }
         }
         else {
             vravesols.push_back(make_pair(vravesol,0));
+            _IKFAST_DISPLAY(cout << "vravesol = "; PrintList(vravesol);)
         }
 
         std::vector<unsigned int> vsolutionindices;
@@ -2169,6 +2183,7 @@ protected:
                 }
                 else if( retaction == IKRA_Success ) {
                     localret->_vsolution.swap(itravesol->first);
+                    _IKFAST_DISPLAY(cout << "localret = "; PrintList(localret->_vsolution);)
                     listlocalikreturns.push_back(std::make_pair(localret, paramnew));
                 }
             }
@@ -2178,6 +2193,7 @@ protected:
         }
         else {
             FOREACH(itravesol, vravesols) {
+                _IKFAST_DISPLAY(cout << "itravesol->first = "; PrintList(itravesol->first);)              
                 _vsolutionindices = vsolutionindices;
                 FOREACH(it,_vsolutionindices) {
                     *it += itravesol->second<<16;
@@ -2191,6 +2207,7 @@ protected:
                 IkReturnPtr localret(new IkReturn(IKRA_Success));
                 localret->_mapdata["solutionindices"] = std::vector<dReal>(_vsolutionindices.begin(),_vsolutionindices.end());
                 localret->_vsolution.swap(itravesol->first);
+                _IKFAST_DISPLAY(cout << "localret = "; PrintList(localret->_vsolution);)
                 listlocalikreturns.push_back(std::make_pair(localret, paramnew));
             }
         }
@@ -2404,8 +2421,12 @@ protected:
         }
         //RAVELOG_VERBOSE("add %d solutions", listlocalikreturns.size());
         FOREACH(itlocalikreturn, listlocalikreturns) {
-            vikreturns.push_back(itlocalikreturn->first);
+          IkReturnPtr vikreturn = itlocalikreturn->first;
+            vikreturns.push_back(vikreturn);
+            _IKFAST_DISPLAY(PrintList(vikreturn->_vsolution);)
         }
+        
+        _IKFAST_DISPLAY(cout << "End of _ValidateSolutionAll";)        
         return static_cast<IkReturnAction>(retactionall); // signals to continue
     }
 

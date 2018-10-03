@@ -238,12 +238,18 @@ public:
 
     virtual void Print() const {
       using std::cout;
+      using std::endl;
       cout << std::setprecision(16);
       unsigned int i = 0;
       for (const auto& s : _vbasesol) {
-        std::cout << i++ << ": ";
+        cout << i++ << ": ";
         s.Print();
       }
+      cout << "vfree = ";
+      for (auto& i : _vfree) {
+        cout << i << ", ";
+      }
+      cout << endl;
     }
 
     std::vector< IkSingleDOFSolutionBase<T> > _vbasesol;       ///< solution and their offsets if joints are mimiced
