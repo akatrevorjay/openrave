@@ -23,6 +23,10 @@
 #include "jacobianinverse.h"
 #endif
 
+#include "ikfast++/iksetup.h"
+#include "ikfast++/print.h"
+using IKFAST::PrintList;
+
 template <typename IkReal>
 class IkFastSolver : public IkSolverBase
 {
@@ -598,6 +602,7 @@ protected:
 
     virtual bool SolveAll(const IkParameterization& rawparam, int filteroptions, std::vector< std::vector<dReal> >& qSolutions)
     {
+      _IKFAST_DISPLAY(cout << "Start of SolveAll";)
         std::vector<IkReturnPtr> vikreturns;
         qSolutions.resize(0);
         if( !SolveAll(rawparam,filteroptions,vikreturns) ) {
@@ -606,7 +611,9 @@ protected:
         qSolutions.resize(vikreturns.size());
         for(size_t i = 0; i < vikreturns.size(); ++i) {
             qSolutions[i] = vikreturns[i]->_vsolution;
+            _IKFAST_DISPLAY(PrintList(qSolutions[i]);)
         }
+      _IKFAST_DISPLAY(cout << "End of SolveAll";)        
         return qSolutions.size()>0;
     }
 
@@ -629,6 +636,7 @@ protected:
 
     virtual bool SolveAll(const IkParameterization& param, const std::vector<dReal>& vFreeParameters, int filteroptions, std::vector< std::vector<dReal> >& qSolutions)
     {
+      _IKFAST_DISPLAY(cout << "Start of SolveAll";)      
         std::vector<IkReturnPtr> vikreturns;
         qSolutions.resize(0);
         if( !SolveAll(param,vFreeParameters,filteroptions,vikreturns) ) {
@@ -637,7 +645,9 @@ protected:
         qSolutions.resize(vikreturns.size());
         for(size_t i = 0; i < vikreturns.size(); ++i) {
             qSolutions[i] = vikreturns[i]->_vsolution;
+            _IKFAST_DISPLAY(PrintList(qSolutions[i]);)
         }
+      _IKFAST_DISPLAY(cout << "End of SolveAll";)        
         return qSolutions.size()>0;
     }
 
@@ -693,11 +703,7 @@ protected:
 
     virtual bool SolveAll(const IkParameterization& rawparam, int filteroptions, std::vector<IkReturnPtr>& vikreturns)
     {
-        {
-          stringstream ss;
-          ss << endl << " Start calling SolveAll" << endl;  
-          RAVELOG_INFO(ss.str());        
-        }
+        _IKFAST_DISPLAY(cout << "Start of SolveAll";)       
         
         vikreturns.resize(0);
         IkParameterization ikparamdummy;
@@ -709,24 +715,19 @@ protected:
         std::vector<IkReal> vfree(_vfreeparams.size());
         StateCheckEndEffector stateCheck(probot,_vchildlinks,_vindependentlinks,filteroptions);
         CollisionOptionsStateSaver optionstate(GetEnv()->GetCollisionChecker(),GetEnv()->GetCollisionChecker()->GetCollisionOptions()|CO_ActiveDOFs,false);
-        IkReturnAction retaction = ComposeSolution(_vfreeparams, vfree, 0, vector<dReal>(), boost::bind(&IkFastSolver::_SolveAll,shared_solver(), param,boost::ref(vfree),filteroptions,boost::ref(vikreturns), boost::ref(stateCheck)), _vFreeInc);
-
         {
           stringstream ss;
           ss << endl << "Before calling ComposeSolution with q0 = vector<dReal>()";        
           ss << endl;          
           RAVELOG_INFO(ss.str());
-        }        
+        }
+        IkReturnAction retaction = ComposeSolution(_vfreeparams, vfree, 0, vector<dReal>(), boost::bind(&IkFastSolver::_SolveAll,shared_solver(), param,boost::ref(vfree),filteroptions,boost::ref(vikreturns), boost::ref(stateCheck)), _vFreeInc);
         if( retaction & IKRA_Quit ) {
             return false;
         }
         _SortSolutions(probot, vikreturns);
 
-        {
-          stringstream ss;
-          ss << endl << "Finish calling SolveAll" << endl;  
-          RAVELOG_INFO(ss.str());        
-        }        
+        _IKFAST_DISPLAY(cout << "End of SolveAll";)       
         
         return vikreturns.size()>0;
     }
@@ -772,12 +773,7 @@ protected:
 
     virtual bool SolveAll(const IkParameterization& rawparam, const std::vector<dReal>& vFreeParameters, int filteroptions, std::vector<IkReturnPtr>& vikreturns)
     {
-        {
-          stringstream ss;
-          ss << endl << " Start calling SolveAll" << endl;  
-          RAVELOG_INFO(ss.str());        
-        }
-        
+        _IKFAST_DISPLAY(cout << "Start of SolveAll";)
         vikreturns.resize(0);
         IkParameterization ikparamdummy;
         const IkParameterization& param = _ConvertIkParameterization(rawparam, ikparamdummy);
@@ -799,11 +795,7 @@ protected:
             return false;
         }
         _SortSolutions(probot, vikreturns);
-        {
-          stringstream ss;
-          ss << endl << "Finish calling SolveAll" << endl;  
-          RAVELOG_INFO(ss.str());        
-        }        
+        _IKFAST_DISPLAY(cout << "End of SolveAll";)     
         return vikreturns.size()>0;
     }
 
@@ -889,31 +881,25 @@ protected:
 protected:
     IkReturnAction ComposeSolution(const std::vector<int>& vfreeparams, vector<IkReal>& vfree, int freeindex, const vector<dReal>& q0, const boost::function<IkReturnAction()>& fn, const std::vector<dReal>& vFreeInc)
     {
-        {
-          stringstream ss;
-          ss << endl << " Start calling ComposeSolution" << endl;
-          RAVELOG_INFO(ss.str());        
-        }
-      
-        stringstream ss;
-        ss << endl;
-        ss << "std::vector<int> vfreeparams = ";
-        FOREACH(it, vfreeparams) {
-          ss << *it << ", ";
-        }
-        ss << endl;
-        ss << "std::vector<double> vfree = ";
-        FOREACH(it, vfree) {
-          ss << *it << ", ";
-        }
-        ss << endl;
-        ss << "int freeindex = " << freeindex << endl;
-        ss << "std::vector<double> q0 = ";        
-        FOREACH(it, q0) {
-          ss << *it << ", ";
-        }
-        ss << endl;          
-        RAVELOG_INFO(ss.str());
+      _IKFAST_DISPLAY(cout << "Start of ComposeSolution";
+                      cout << endl;
+                      cout << "std::vector<int> vfreeparams = ";
+                      FOREACH(it, vfreeparams) {
+                        cout << *it << ", ";
+                      }
+                      cout << endl;
+                      cout << "std::vector<double> vfree = ";
+                      FOREACH(it, vfree) {
+                        cout << *it << ", ";
+                      }
+                      cout << endl;
+                      cout << "int freeindex = " << freeindex << endl;
+                      cout << "std::vector<double> q0 = ";        
+                      FOREACH(it, q0) {
+                        cout << *it << ", ";
+                      }
+                      cout << endl;          
+        )
 
         if( freeindex >= (int)vfreeparams.size()) {
             IkReturnAction ikreturnaction = fn();
@@ -1045,11 +1031,7 @@ protected:
             allres |= res;
         }
 
-        {
-          stringstream ss;
-          ss << endl << "Finish calling ComposeSolution" << endl;
-          RAVELOG_INFO(ss.str());
-        }
+        _IKFAST_DISPLAY(cout << "End of ComposeSolution";) 
 
         return static_cast<IkReturnAction>(allres);
     }
@@ -2054,23 +2036,20 @@ protected:
 
     IkReturnAction _SolveAll(const IkParameterization& param, const vector<IkReal>& vfree, int filteroptions, std::vector<IkReturnPtr>& vikreturns, StateCheckEndEffector& stateCheck)
     {
-      {
-        stringstream ss;
-        ss << endl << " Start calling _SolveAll" << endl;
-        ss << "std::vector<double> vfree = ";
+      _IKFAST_DISPLAY(
+        cout << " Start calling _SolveAll" << endl;
+        cout << "std::vector<double> vfree = ";
         FOREACH(it, vfree) {
-          ss << *it << ", ";
+          cout << *it << ", ";
         }
-        ss << endl;
-        ss << "filteroptions = " << filteroptions << endl;
-        // ss << "std::vector<IkReturnPtr>& vikreturns = ";
+        cout << endl;
+        cout << "filteroptions = " << filteroptions << endl;
+        // cout << "std::vector<IkReturnPtr>& vikreturns = ";
         // FOREACH(it, vikreturns) {
-        //   ss << *it << ", ";
+        //   cout << *it << ", ";
         // }
-        // ss << endl;
-        RAVELOG_INFO(ss.str());
-      }
-            
+        // cout << endl;
+        )
       
         RobotBase::ManipulatorPtr pmanip(_pmanip);
         RobotBasePtr probot = pmanip->GetRobot();
@@ -2081,39 +2060,30 @@ protected:
             for(size_t isolution = 0; isolution < solutions.GetNumSolutions(); ++isolution) {
                 const ikfast::IkSolution<IkReal>& iksol = dynamic_cast<const ikfast::IkSolution<IkReal>& >(solutions.GetSolution(isolution));
                 iksol.Validate();
+                _IKFAST_DISPLAY(iksol.Print();)
                 //RAVELOG_VERBOSE_FORMAT("ikfast solution %d/%d (free=%d)", isolution%solutions.GetNumSolutions()%iksol.GetFree().size());
                 if( iksol.GetFree().size() > 0 ) {
                     // have to search over all the free parameters of the solution!
                     vsolfree.resize(iksol.GetFree().size());
                     std::vector<dReal> vFreeInc(_GetFreeIncFromIndices(iksol.GetFree()));
                     IkReturnAction retaction = ComposeSolution(iksol.GetFree(), vsolfree, 0, vector<dReal>(), boost::bind(&IkFastSolver::_ValidateSolutionAll,shared_solver(), boost::ref(param), boost::ref(iksol), boost::ref(vsolfree), filteroptions, boost::ref(sol), boost::ref(vikreturns), boost::ref(stateCheck)), vFreeInc);
-                    {
-                      stringstream ss;
-                      ss << endl << "Before calling ComposeSolution with q0 = vector<dReal>()";        
-                      ss << endl << "std::vector<double> vsolfree = ";        
+                    _IKFAST_DISPLAY(
+                      cout << endl << "Before calling ComposeSolution with q0 = vector<dReal>()";        
+                      cout << endl << "std::vector<double> vsolfree = ";        
                       FOREACH(it, vsolfree) {
-                        ss << *it << ", ";
+                        cout << *it << ", ";
                       }
-                      ss << endl;
-                      RAVELOG_INFO(ss.str());
-                    }
+                      cout << endl;
+                      )
                     if( retaction & IKRA_Quit) {
-                      {
-                        stringstream ss;
-                        ss << "_SolveAll returns here: " << retaction;
-                        RAVELOG_INFO(ss.str());
-                      }                      
-                        return retaction;
+                      _IKFAST_DISPLAY(cout << "_SolveAll returns here: " << retaction;)
+                      return retaction;
                     }
                 }
                 else {
                     IkReturnAction retaction = _ValidateSolutionAll(param, iksol, vector<IkReal>(), filteroptions, sol, vikreturns, stateCheck);
                     if( retaction & IKRA_Quit ) {
-                      {
-                        stringstream ss;
-                        ss << "_SolveAll returns here: " << retaction;
-                        RAVELOG_INFO(ss.str());
-                      }                      
+                      _IKFAST_DISPLAY(cout << "_SolveAll returns here: " << retaction;)
                         return retaction;
                     }
                 }

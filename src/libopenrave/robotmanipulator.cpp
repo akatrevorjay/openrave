@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "libopenrave.h"
+#include "ikfast++/iksetup.h"
 
 namespace OpenRAVE {
 
@@ -276,6 +277,7 @@ bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, std
 
 bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, const std::vector<dReal>& vFreeParameters, std::vector<std::vector<dReal> >& solutions, int filteroptions) const
 {
+  _IKFAST_DISPLAY(cout << "Start of FindIKSolutions";)
     IkSolverBasePtr pIkSolver = GetIkSolver();
     OPENRAVE_ASSERT_FORMAT(!!pIkSolver, "manipulator %s:%s does not have an IK solver set",RobotBasePtr(__probot)->GetName()%GetName(),ORE_Failed);
     BOOST_ASSERT(pIkSolver->GetManipulator() == shared_from_this() );
@@ -294,6 +296,7 @@ bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, con
     else {
       bool_return = pIkSolver->SolveAll(localgoal, vFreeParameters, filteroptions, solutions);
     }
+  _IKFAST_DISPLAY(cout << "End of FindIKSolutions";)
     return bool_return;
 }
 
@@ -331,6 +334,7 @@ bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, int
 
 bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, const std::vector<dReal>& vFreeParameters, int filteroptions, std::vector<IkReturnPtr>& vikreturns) const
 {
+  _IKFAST_DISPLAY(cout << "Start of FindIKSolutions";)
     IkSolverBasePtr pIkSolver = GetIkSolver();
     OPENRAVE_ASSERT_FORMAT(!!pIkSolver, "manipulator %s:%s does not have an IK solver set",RobotBasePtr(__probot)->GetName()%GetName(),ORE_Failed);
     BOOST_ASSERT(pIkSolver->GetManipulator() == shared_from_this() );
@@ -341,6 +345,7 @@ bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, con
     else {
         localgoal=goal;
     }
+  _IKFAST_DISPLAY(cout << "End of FindIKSolutions";)    
     return vFreeParameters.size() == 0 ? pIkSolver->SolveAll(localgoal,filteroptions,vikreturns) : pIkSolver->SolveAll(localgoal,vFreeParameters,filteroptions,vikreturns);
 }
 
