@@ -75,6 +75,9 @@
 #endif
 
 #include "next_combination.h"
+#include "ikfast++/iksetup.h"
+#include "ikfast++/print.h"
+using IKFAST::PrintList;
 
 #define LOAD_IKFUNCTION0(fnname) { \
         ikfunctions->_ ## fnname = (typename ikfast::IkFastFunctions<T>::fnname ## Fn)SysLoadSym(plib, # fnname); \
@@ -1380,6 +1383,14 @@ public:
                         }
                         s << "]" << std::endl;
                         RAVELOG_VERBOSE(s.str());
+
+                        _IKFAST_DISPLAY(
+                          cout << "Did not find expected vrealsolution = " << endl;
+                          FOREACH(it, vrealsolution) {
+                            cout << *it << ", ";
+                          }
+                        )
+                        
                         vnofullsolutions.push_back(make_pair(twrist,vfreeparameters_real));
                     }
                 }
