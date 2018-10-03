@@ -653,16 +653,13 @@ protected:
 
     virtual bool Solve(const IkParameterization& rawparam, const std::vector<dReal>& q0, int filteroptions, IkReturnPtr ikreturn)
     {
-        {
-          stringstream ss;
-          ss << endl << " Start calling Solve" << endl;
-          ss << "std::vector<double> q0 = ";
+        _IKFAST_DISPLAY(cout << endl << " Start calling Solve" << endl;
+          cout << "std::vector<double> q0 = ";
           FOREACH(it, q0) {
-            ss << *it << ", ";
+            cout << *it << ", ";
           }
-          ss << endl;        
-          RAVELOG_INFO(ss.str());        
-        }
+          cout << endl;
+        )
       
         IkParameterization ikparamdummy;
         const IkParameterization& param = _ConvertIkParameterization(rawparam, ikparamdummy);
@@ -1032,11 +1029,7 @@ protected:
     /// \param tLocalTool _pmanip->GetLocalToolTransform()
     inline bool _CallIk(const IkParameterization& param, const vector<IkReal>& vfree, const Transform& tLocalTool, ikfast::IkSolutionList<IkReal>& solutions)
     {
-        {
-          stringstream ss;
-          ss << endl << " Start calling _CallIk" << endl;
-          RAVELOG_INFO(ss.str());        
-        }       
+      _IKFAST_DISPLAY(cout << "Start of _CallIk";)
         bool bsuccess = false;
         if( !!_ikfunctions->_ComputeIk2 ) {
             bsuccess = _CallIk2(param, vfree, tLocalTool, solutions);
@@ -1044,17 +1037,13 @@ protected:
         else {
             bsuccess = _CallIk1(param, vfree, tLocalTool, solutions);
         }
-
-        {
-          stringstream ss;
-          ss << endl << "Finish calling _CallIk" << endl;
-          RAVELOG_INFO(ss.str());        
-        }           
+        _IKFAST_DISPLAY(cout << "End of _CallIk";)        
         return bsuccess;
     }
 
     bool _CallIk1(const IkParameterization& param, const vector<IkReal>& vfree, const Transform& tLocalTool, ikfast::IkSolutionList<IkReal>& solutions)
     {
+      _IKFAST_DISPLAY(cout << "Start of _CallIk1";)      
         try {
             switch(param.GetType()) {
             case IKP_Transform6D: {
@@ -1192,6 +1181,7 @@ protected:
 
     bool _CallIk2(const IkParameterization& param, const vector<IkReal>& vfree, const Transform& tLocalTool, ikfast::IkSolutionList<IkReal>& solutions)
     {
+      _IKFAST_DISPLAY(cout << "Start of _CallIk2";)
         RobotBase::ManipulatorPtr pmanip = _pmanip.lock();
         try {
             switch(param.GetType()) {

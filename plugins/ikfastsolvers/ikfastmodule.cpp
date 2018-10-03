@@ -1297,17 +1297,15 @@ public:
                 robot->SetActiveDOFValues(vrand, false);
                 pmanip->FindIKSolutions(twrist, viksolutions, filteroptions);
 
-                {
-                  stringstream ss;                
-                  FOREACH(itsoln, viksolutions) {
-                    FOREACH(it, *itsoln)
-                    {
-                      ss << *it << " ";
-                    }
-                    ss << endl;
-                  }
-                  RAVELOG_INFO(ss.str());                  
-                }
+                // _IKFAST_DISPLAY(
+                //   FOREACH(itsoln, viksolutions) {
+                //     FOREACH(it, *itsoln)
+                //     {
+                //       cout << *it << " ";
+                //     }
+                //     cout << endl;
+                //   }
+                //   )
                 
                 if( vfreeparameters_real.size() > 0 ) {
                     pmanip->FindIKSolutions(twrist, vfreeparameters_real, viksolutions2, filteroptions);
