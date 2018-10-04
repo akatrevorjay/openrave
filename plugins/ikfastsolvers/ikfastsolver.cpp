@@ -1445,9 +1445,7 @@ protected:
           _IKFAST_DISPLAY(cout << endl << " After calling _CallIk (failure)" << endl;)
           return IKRA_RejectKinematics;
         }
-        _IKFAST_DISPLAY(
-          cout << endl << " After calling _CallIk (success)" << endl << "Not returning IKRA_Success, yet" << endl;
-          )
+        _IKFAST_DISPLAY(cout << " After calling _CallIk (success)" << endl << "Not returning IKRA_Success, yet";)
 
         RobotBasePtr probot = pmanip->GetRobot();
         SolutionInfo bestsolution;
@@ -1462,12 +1460,15 @@ protected:
             // sort the solutions from closest to farthest
             vector<pair<size_t,dReal> > vdists; vdists.reserve(numsolns);
             for(size_t isolution = 0; isolution < numsolns; ++isolution) {
+              _IKFAST_DISPLAY();              
                 const ikfast::IkSolution<IkReal>& iksol = dynamic_cast<const ikfast::IkSolution<IkReal>& >(solutions.GetSolution(isolution));
                 iksol.Validate();
+                _IKFAST_DISPLAY();            
                 vsolfree.resize(iksol.GetFree().size());
                 for(size_t ifree = 0; ifree < iksol.GetFree().size(); ++ifree) {
                     vsolfree[ifree] = q0.at(iksol.GetFree()[ifree]);
                 }
+                _IKFAST_DISPLAY();                
                 iksol.GetSolution(sol,vsolfree);
                 for(int i = 0; i < iksol.GetDOF(); ++i) {
                     vravesol.at(i) = (dReal)sol[i];
@@ -1475,17 +1476,19 @@ protected:
                 vdists.push_back(make_pair(vdists.size(),_ComputeGeometricConfigDistSqr(probot,vravesol,q0,true)));
             }
 
+            _IKFAST_DISPLAY();            
             std::stable_sort(vdists.begin(),vdists.end(),SortSolutionDistances);
+            _IKFAST_DISPLAY();
             for(size_t i = 0; i < vsolutionorder.size(); ++i) {
                 vsolutionorder[i] = vdists[i].first;
             }
         }
         else {
+          _IKFAST_DISPLAY();          
             for(size_t i = 0; i < vsolutionorder.size(); ++i) {
                 vsolutionorder[i] = i;
             }
         }
-
         _IKFAST_DISPLAY();
 
         int allres = IKRA_Reject;
