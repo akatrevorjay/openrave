@@ -29,6 +29,9 @@
 #include <utility> // for std::pair
 #include <cstdlib>
 
+#define IKFASTCPP_DOUBLE
+#include "ikfast++/iksetup.h"
+
 #ifndef RAVE_DEPRECATED
 #define RAVE_DEPRECATED
 #endif
@@ -435,12 +438,16 @@ public:
 
     /// t = this * r
     inline RaveTransform<T> operator* (const RaveTransform<T>&r) const {
+        _IKFAST_DISPLAY(std::cout <<
+                        "input: this = " << *this << std::endl <<
+                        "          r = " << r;)
         RaveTransform<T> t;
         t.trans = operator*(r.trans);
         t.rot.x = rot.x*r.rot.x - rot.y*r.rot.y - rot.z*r.rot.z - rot.w*r.rot.w;
         t.rot.y = rot.x*r.rot.y + rot.y*r.rot.x + rot.z*r.rot.w - rot.w*r.rot.z;
         t.rot.z = rot.x*r.rot.z + rot.z*r.rot.x + rot.w*r.rot.y - rot.y*r.rot.w;
         t.rot.w = rot.x*r.rot.w + rot.w*r.rot.x + rot.y*r.rot.z - rot.z*r.rot.y;
+        _IKFAST_DISPLAY(std::cout << "output t = " << t;)
         // normalize the transformation
         MATH_ASSERT( t.rot.lengthsqr4() > 0.99f && t.rot.lengthsqr4() < 1.01f );
         t.rot.normalize4();
