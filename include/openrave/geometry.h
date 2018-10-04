@@ -209,11 +209,21 @@ public:
     RaveVector(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {
     }
     template<typename U> RaveVector(const RaveVector<U> &vec) : x((T)vec.x), y((T)vec.y), z((T)vec.z), w((T)vec.w) {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));      
     }
 
     /// note, it only copes 3 values!
     template<typename U> RaveVector(const U* pf) {
         MATH_ASSERT(pf != NULL); x = (T)pf[0]; y = (T)pf[1]; z = (T)pf[2]; w = 0;
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));              
     }
 
     T operator[] (int i) const {
@@ -225,20 +235,54 @@ public:
 
     template <typename U>
     RaveVector<T>& operator=(const RaveVector<U>&r) {
-        x = (T)r.x; y = (T)r.y; z = (T)r.z; w = (T)r.w; return *this;
+        x = (T)r.x; y = (T)r.y; z = (T)r.z; w = (T)r.w;
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));              
+        return *this;
     }
 
     // SCALAR FUNCTIONS
     template <typename U> inline T dot(const RaveVector<U> &v) const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w) ||
+                      std::isnan(v.x) ||
+                      std::isnan(v.y) ||
+                      std::isnan(v.z) ||
+                      std::isnan(v.w)
+                      ));      
         return x*v.x + y*v.y + z*v.z + w*v.w;
     }
     template <typename U> inline T dot3(const RaveVector<U> &v) const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w) ||
+                      std::isnan(v.x) ||
+                      std::isnan(v.y) ||
+                      std::isnan(v.z) ||
+                      std::isnan(v.w)
+                      ));      
         return x*v.x + y*v.y + z*v.z;
     }
     inline RaveVector<T>& normalize() {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));      
         return normalize4();
     }
     inline RaveVector<T>& normalize4() {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));
         T f = x*x+y*y+z*z+w*w;
         if(( f < T(1)-std::numeric_limits<T>::epsilon()) ||( f > T(1)+std::numeric_limits<T>::epsilon()) ) {
             MATH_ASSERT( f > 0 );
@@ -249,6 +293,11 @@ public:
         return *this;
     }
     inline RaveVector<T>& normalize3() {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));        
         T f = x*x+y*y+z*z;
         if(( f < T(1)-std::numeric_limits<T>::epsilon()) ||( f > T(1)+std::numeric_limits<T>::epsilon()) ) {
             MATH_ASSERT( f > 0 );
@@ -259,30 +308,70 @@ public:
     }
 
     inline T lengthsqr2() const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));        
         return x*x + y*y;
     }
     inline T lengthsqr3() const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));        
         return x*x + y*y + z*z;
     }
     inline T lengthsqr4() const {
-      _IKFAST_DISPLAY(std::cout << x << ", " << y << ", " << z << ", " << w;)
+      // _IKFAST_DISPLAY(std::cout << x << ", " << y << ", " << z << ", " << w;)
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));          
       return x*x + y*y + z*z + w*w;
     }
 
     inline void Set3(const T* pvals) {
         x = pvals[0]; y = pvals[1]; z = pvals[2];
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));          
     }
     inline void Set3(T val1, T val2, T val3) {
         x = val1; y = val2; z = val3;
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));          
     }
     inline void Set4(const T* pvals) {
         x = pvals[0]; y = pvals[1]; z = pvals[2]; w = pvals[3];
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));          
     }
     inline void Set4(T val1, T val2, T val3, T val4) {
         x = val1; y = val2; z = val3; w = val4;
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));          
     }
     /// 3 dim cross product, w is not touched
     inline RaveVector<T> cross(const RaveVector<T> &v) const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));        
         RaveVector<T> ucrossv;
         ucrossv[0] = y * v[2] - z * v[1];
         ucrossv[1] = z * v[0] - x * v[2];
@@ -304,36 +393,105 @@ public:
     }
 
     inline RaveVector<T> operator-() const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));        
         RaveVector<T> v; v.x = -x; v.y = -y; v.z = -z; v.w = -w; return v;
     }
     template <typename U> inline RaveVector<T> operator+(const RaveVector<U> &r) const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));        
         RaveVector<T> v; v.x = x+T(r.x); v.y = y+T(r.y); v.z = z+T(r.z); v.w = w+T(r.w); return v;
     }
     template <typename U> inline RaveVector<T> operator-(const RaveVector<U> &r) const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w)
+                      ));        
         RaveVector<T> v; v.x = x-T(r.x); v.y = y-T(r.y); v.z = z-T(r.z); v.w = w-T(r.w); return v;
     }
     template <typename U> inline RaveVector<T> operator*(const RaveVector<U> &r) const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w) ||
+                      std::isnan(r.x) ||
+                      std::isnan(r.y) ||
+                      std::isnan(r.z) ||
+                      std::isnan(r.w)                      
+                      ));        
         RaveVector<T> v; v.x = T(r.x)*x; v.y = T(r.y)*y; v.z = T(r.z)*z; v.w = T(r.w)*w; return v;
     }
     inline RaveVector<T> operator*(T k) const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w) ||
+                      std::isnan(k)
+                      ));        
         RaveVector<T> v; v.x = k*x; v.y = k*y; v.z = k*z; v.w = k*w; return v;
     }
 
     template <typename U> inline RaveVector<T>& operator += (const RaveVector<U>&r) {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w) ||
+                      std::isnan(r.x) ||
+                      std::isnan(r.y) ||
+                      std::isnan(r.z) ||
+                      std::isnan(r.w)                      
+                      ));    
         x += T(r.x); y += T(r.y); z += T(r.z); w += T(r.w); return *this;
     }
     template <typename U> inline RaveVector<T>& operator -= (const RaveVector<U>&r) {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w) ||
+                      std::isnan(r.x) ||
+                      std::isnan(r.y) ||
+                      std::isnan(r.z) ||
+                      std::isnan(r.w)                      
+                      ));          
         x -= T(r.x); y -= T(r.y); z -= T(r.z); w -= T(r.w); return *this;
     }
     template <typename U> inline RaveVector<T>& operator *= (const RaveVector<U>&r) {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w) ||
+                      std::isnan(r.x) ||
+                      std::isnan(r.y) ||
+                      std::isnan(r.z) ||
+                      std::isnan(r.w)                      
+                      ));          
         x *= T(r.x); y *= T(r.y); z *= T(r.z); w *= T(r.w); return *this;
     }
 
     inline RaveVector<T>& operator *= (const T k) {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w) ||
+                      std::isnan(k)
+                      ));          
         x *= k; y *= k; z *= k; w *= k; return *this;
     }
     inline RaveVector<T>& operator /= (const T _k) {
       MATH_ASSERT( _k != 0);
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w) ||
+                      std::isnan(_k)
+                      ));         
         T k=1/_k; x *= k; y *= k; z *= k; w *= k; return *this;
     }
 
@@ -345,6 +503,15 @@ public:
 
     /// cross product operator
     template <typename U> inline RaveVector<T> operator^(const RaveVector<U> &v) const {
+        MATH_ASSERT(!(std::isnan(x) ||
+                      std::isnan(y) ||
+                      std::isnan(z) ||
+                      std::isnan(w) ||
+                      std::isnan(v.x) ||
+                      std::isnan(v.y) ||
+                      std::isnan(v.z) ||
+                      std::isnan(v.w)
+                      ));
         RaveVector<T> ucrossv;
         ucrossv[0] = y * v[2] - z * v[1];
         ucrossv[1] = z * v[0] - x * v[2];
@@ -356,6 +523,12 @@ public:
 template <typename T>
 inline RaveVector<T> operator* (float f, const RaveVector<T>&left)
 {
+  MATH_ASSERT(!(std::isnan(left.x) ||
+                std::isnan(left.y) ||
+                std::isnan(left.z) ||
+                std::isnan(left.w) ||
+                std::isnan(f)
+                ));  
     RaveVector<T> v;
     v.x = (T)f * left.x;
     v.y = (T)f * left.y;
@@ -367,6 +540,12 @@ inline RaveVector<T> operator* (float f, const RaveVector<T>&left)
 template <typename T>
 inline RaveVector<T> operator* (double f, const RaveVector<T>&left)
 {
+  MATH_ASSERT(!(std::isnan(left.x) ||
+                std::isnan(left.y) ||
+                std::isnan(left.z) ||
+                std::isnan(left.w) ||
+                std::isnan(f)
+                ));    
     RaveVector<T> v;
     v.x = (T)f * left.x;
     v.y = (T)f * left.y;
@@ -403,11 +582,31 @@ public:
 
     /// transform a 3 dim vector
     inline RaveVector<T> operator* (const RaveVector<T>&r) const {
+        MATH_ASSERT(!(std::isnan(r.x) ||
+                      std::isnan(r.y) ||
+                      std::isnan(r.z) ||
+                      std::isnan(r.w) ||
+                      std::isnan(this->rot.x) ||
+                      std::isnan(this->rot.y) ||
+                      std::isnan(this->rot.z) ||
+                      std::isnan(this->rot.w)
+                      ));
+        
         return trans + rotate(r);
     }
 
     /// transform a vector by the rotation component only
     inline RaveVector<T> rotate(const RaveVector<T>& r) const {
+        MATH_ASSERT(!(std::isnan(r.x) ||
+                      std::isnan(r.y) ||
+                      std::isnan(r.z) ||
+                      std::isnan(r.w) ||
+                      std::isnan(this->rot.x) ||
+                      std::isnan(this->rot.y) ||
+                      std::isnan(this->rot.z) ||
+                      std::isnan(this->rot.w)
+                      ));
+        
         T xx = 2 * rot.y * rot.y;
         T xy = 2 * rot.y * rot.z;
         T xz = 2 * rot.y * rot.w;
@@ -427,6 +626,16 @@ public:
 
     /// transform a transform by the rotation component only
     inline RaveTransform<T> rotate(const RaveTransform<T>& r) const {
+        MATH_ASSERT(!(std::isnan(r.rot.x) ||
+                      std::isnan(r.rot.y) ||
+                      std::isnan(r.rot.z) ||
+                      std::isnan(r.rot.w) ||
+                      std::isnan(this->rot.x) ||
+                      std::isnan(this->rot.y) ||
+                      std::isnan(this->rot.z) ||
+                      std::isnan(this->rot.w)
+                      ));
+        
         RaveTransform<T> t;
         t.trans = rotate(r.trans);
         t.rot.x = rot.x*r.rot.x - rot.y*r.rot.y - rot.z*r.rot.z - rot.w*r.rot.w;
@@ -441,18 +650,19 @@ public:
 
     /// t = this * r
     inline RaveTransform<T> operator* (const RaveTransform<T>&r) const {
-        _IKFAST_DISPLAY(std::cout << std::setprecision(20) <<
-                        "input: this = " << *this << std::endl <<
-                        "          r = " << r;);
+        // _IKFAST_DISPLAY(std::cout << std::setprecision(20) <<
+        //                 "input: this = " << *this << std::endl <<
+        //                 "          r = " << r;);
+        
         RaveTransform<T> t;
-        _IKFAST_DISPLAY(std::cout << "  init t = " << t;);
+        // _IKFAST_DISPLAY(std::cout << "  init t = " << t;);
         t.trans = operator*(r.trans);
         t.rot.x = rot.x*r.rot.x - rot.y*r.rot.y - rot.z*r.rot.z - rot.w*r.rot.w;
         t.rot.y = rot.x*r.rot.y + rot.y*r.rot.x + rot.z*r.rot.w - rot.w*r.rot.z;
         t.rot.z = rot.x*r.rot.z + rot.z*r.rot.x + rot.w*r.rot.y - rot.y*r.rot.w;
         t.rot.w = rot.x*r.rot.w + rot.w*r.rot.x + rot.y*r.rot.z - rot.z*r.rot.y;
         T tlen = t.rot.lengthsqr4();
-        _IKFAST_DISPLAY(std::cout << "output t = " << t << std::endl << "tlen = " << tlen;);
+        // _IKFAST_DISPLAY(std::cout << "output t = " << t << std::endl << "tlen = " << tlen;);
         if(!(tlen > 0.99f && tlen < 1.01f)) {
           _IKFAST_DISPLAY(std::cout << "What is tlen? tlen = " << tlen;);
           if(tlen == 1.0) {
@@ -463,6 +673,17 @@ public:
           }
           MATH_ASSERT( tlen > 0.99f && tlen < 1.01f );
         }
+
+        MATH_ASSERT(!(std::isnan(r.rot.x) ||
+                      std::isnan(r.rot.y) ||
+                      std::isnan(r.rot.z) ||
+                      std::isnan(r.rot.w) ||
+                      std::isnan(this->rot.x) ||
+                      std::isnan(this->rot.y) ||
+                      std::isnan(this->rot.z) ||
+                      std::isnan(this->rot.w)
+                      ));        
+        
         // normalize the transformation
         t.rot.normalize4();
         return t;
@@ -474,6 +695,11 @@ public:
     }
 
     inline RaveTransform<T> inverse() const {
+        MATH_ASSERT(!(std::isnan(this->rot.x) ||
+                      std::isnan(this->rot.y) ||
+                      std::isnan(this->rot.z) ||
+                      std::isnan(this->rot.w)
+                      ));      
         RaveTransform<T> inv;
         inv.rot.x = rot.x;
         inv.rot.y = -rot.y;
@@ -485,6 +711,16 @@ public:
     }
 
     template <typename U> inline RaveTransform<T>& operator= (const RaveTransform<U>&r) {
+        MATH_ASSERT(!(std::isnan(r.rot.x) ||
+                      std::isnan(r.rot.y) ||
+                      std::isnan(r.rot.z) ||
+                      std::isnan(r.rot.w) ||
+                      std::isnan(this->rot.x) ||
+                      std::isnan(this->rot.y) ||
+                      std::isnan(this->rot.z) ||
+                      std::isnan(this->rot.w)
+                      ));
+        
         trans = r.trans;
         rot = r.rot;
         MATH_ASSERT( rot.lengthsqr4() > 0.99f && rot.lengthsqr4() < 1.01f );

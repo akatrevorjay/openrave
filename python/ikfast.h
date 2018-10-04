@@ -172,11 +172,11 @@ public:
                 solution[i] = _vbasesol[i].foffset;
             else {
                 solution[i] = freevalues[_vbasesol[i].freeind]*_vbasesol[i].fmul + _vbasesol[i].foffset;
-                if( solution[i] > T(3.14159265358979) ) {
-                    solution[i] -= T(6.28318530717959);
+                while( solution[i] > T(M_PI) ) {
+                    solution[i] -= T(M_PI) * 2.0;
                 }
-                else if( solution[i] < T(-3.14159265358979) ) {
-                    solution[i] += T(6.28318530717959);
+                while( solution[i] <= T(-M_PI) ) {
+                    solution[i] += T(M_PI) * 2.0;
                 }
             }
         }

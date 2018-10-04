@@ -1222,19 +1222,12 @@ public:
                 bool findiksolutionsuccess = pmanip->FindIKSolution(twrist, viksolution, filteroptions);
 
                 _IKFAST_DISPLAY(cout << endl << "After calling FindIKSolution" << endl;
-                  cout << "viksolution = ";
-                  FOREACH(it, viksolution) {
-                    cout << *it << ", ";
-                  }
-                  cout << endl;
+                  cout << "viksolution = "; PrintList(viksolution);
+                  cout << "findiksolutionsuccess = " << findiksolutionsuccess;
                   )
                 
                 if( !findiksolutionsuccess ) {
-                    {
-                      stringstream ss;
-                      ss << endl << " After calling FindIKSolution (failure)" << endl;
-                      RAVELOG_INFO(ss.str());
-                    }
+                    _IKFAST_DISPLAY(cout << " After calling FindIKSolution (failure)";)
                   
                     if( !bnoiksolution ) {
                         vnosolutions.push_back(make_pair(twrist,vfreeparameters));
@@ -1256,14 +1249,14 @@ public:
                     RAVELOG_WARN(s.str());
                 }
                 else {
-                    {
-                      stringstream ss;
-                      ss << endl << "Finish calling FindIKSolution (success)" << endl;
-                      RAVELOG_INFO(ss.str());        
-                    }
+                    _IKFAST_DISPLAY(cout << endl << "Finish calling FindIKSolution (success)";)
                   
                     robot->SetActiveDOFValues(viksolution,false);
                     twrist_out = pmanip->GetIkParameterization(twrist);
+
+                    _IKFAST_DISPLAY(cout << "twrist = " << twrist << endl
+                                    << "twrist_out = " << twrist_out;)
+                    
                     if( !pmanip->GetIkSolver()->GetFreeParameters(vfreeparameters_out) ) {
                         RAVELOG_WARN("failed to get freeparameters");
                     }

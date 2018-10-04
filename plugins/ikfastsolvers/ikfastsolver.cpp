@@ -1449,8 +1449,9 @@ protected:
 
         RobotBasePtr probot = pmanip->GetRobot();
         SolutionInfo bestsolution;
-        std::vector<dReal> vravesol(pmanip->GetArmIndices().size());
-        std::vector<IkReal> sol(pmanip->GetArmIndices().size()), vsolfree;
+        unsigned int ninds = pmanip->GetArmIndices().size();        
+        std::vector<dReal> vravesol(ninds, 0);
+        std::vector<IkReal> sol(ninds, 0), vsolfree;
         // find the first valid solution that satisfies joint constraints and collisions
         boost::tuple<const vector<IkReal>&, const vector<dReal>&,int> textra(vsolfree, q0, filteroptions);
 
@@ -1464,12 +1465,15 @@ protected:
                 const ikfast::IkSolution<IkReal>& iksol = dynamic_cast<const ikfast::IkSolution<IkReal>& >(solutions.GetSolution(isolution));
                 iksol.Validate();
                 _IKFAST_DISPLAY();            
-                vsolfree.resize(iksol.GetFree().size());
-                for(size_t ifree = 0; ifree < iksol.GetFree().size(); ++ifree) {
-                    vsolfree[ifree] = q0.at(iksol.GetFree()[ifree]);
+                // vsolfree.resize(iksol.GetFree().size());
+                vsolfree = vector<IkReal>(ninds, 0); // TGN fixed this
+                const vector<int>& vfree = iksol.GetFree();
+                unsigned int nfree = vfree.size();
+                for(size_t ifree = 0; ifree < nfree; ++ifree) {
+                    vsolfree[vfree[ifree]] = q0[vfree[ifree]];
                 }
-                _IKFAST_DISPLAY();                
                 iksol.GetSolution(sol,vsolfree);
+                _IKFAST_DISPLAY(cout << "sol = "; PrintList(sol););                
                 for(int i = 0; i < iksol.GetDOF(); ++i) {
                     vravesol.at(i) = (dReal)sol[i];
                 }
@@ -2029,7 +2033,7 @@ protected:
         if( _CallIk(param,vfree, pmanip->GetLocalToolTransform(), solutions) ) {
             vector<IkReal> vsolfree;
             unsigned int ninds = pmanip->GetArmIndices().size();
-            std::vector<IkReal> sol(ninds, 0);
+            std::vector<IkReal> sol(ninds, 0); // TGN fixed this
             for(size_t isolution = 0; isolution < solutions.GetNumSolutions(); ++isolution) {
                 const ikfast::IkSolution<IkReal>& iksol = dynamic_cast<const ikfast::IkSolution<IkReal>& >(solutions.GetSolution(isolution));
                 iksol.Validate();
@@ -2038,7 +2042,7 @@ protected:
                 if( iksol.GetFree().size() > 0 ) {
                     // have to search over all the free parameters of the solution!
                     // vsolfree.resize(iksol.GetFree().size());
-                    vsolfree = vector<IkReal>(ninds, 0);
+                    vsolfree = vector<IkReal>(ninds, 0); // TGN fixed this
                     std::vector<dReal> vFreeInc(_GetFreeIncFromIndices(iksol.GetFree()));
                     _IKFAST_DISPLAY(cout << " iksol.GetFree() = "; PrintList(iksol.GetFree());
                                     cout << "        vFreeInc = "; PrintList(vFreeInc);

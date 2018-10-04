@@ -15,7 +15,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "libopenrave.h"
-#include "ikfast++/iksetup.h"
+#include "ikfast++/print.h"
+using IKFAST::PrintList;
 
 namespace OpenRAVE {
 
@@ -221,6 +222,9 @@ bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, cons
         JointConstPtr pjoint = probot->GetJointFromDOFIndex(__varmdofindices[i]);
         solution[i] = pjoint->GetValue(__varmdofindices[i]-pjoint->GetDOFIndex());
     }
+
+    _IKFAST_DISPLAY(cout << "solution = "; PrintList(solution);)
+    
     IkParameterization localgoal;
     if( !!__pBase ) {
         localgoal = __pBase->GetTransform().inverse()*goal;
