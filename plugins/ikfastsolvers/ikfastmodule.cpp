@@ -1209,13 +1209,8 @@ public:
                 bool bsuccess = true;
                 bool bnoiksolution = false;
                 
-                _IKFAST_DISPLAY(cout << endl << " Before calling FindIKSolution" << endl;
+                _IKFAST_DISPLAY(cout << endl << "Before calling FindIKSolution" << endl;
                   cout << "twrist = " << twrist << endl;
-                  cout << "viksolution = ";
-                  FOREACH(it, viksolution) {
-                    cout << *it << ", ";
-                  }
-                  cout << endl;
                   cout << "filteroptions = " << filteroptions << endl;
                   cout << endl << "std::vector<double> viksolution = ";        
                   FOREACH(it, viksolution) {
@@ -1225,6 +1220,15 @@ public:
                   )
                 
                 bool findiksolutionsuccess = pmanip->FindIKSolution(twrist, viksolution, filteroptions);
+
+                _IKFAST_DISPLAY(cout << endl << "After calling FindIKSolution" << endl;
+                  cout << "viksolution = ";
+                  FOREACH(it, viksolution) {
+                    cout << *it << ", ";
+                  }
+                  cout << endl;
+                  )
+                
                 if( !findiksolutionsuccess ) {
                     {
                       stringstream ss;

@@ -200,21 +200,17 @@ bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, vect
 
 bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, const std::vector<dReal>& vFreeParameters, vector<dReal>& solution, int filteroptions) const
 {
-    {
-      stringstream ss;
-      ss << endl << " Start calling FindIKSolution" << endl;
-      ss << "std::vector<double> vFreeParameters = ";
-      FOREACH(it, vFreeParameters) {
-        ss << *it << ", ";
-      }
-      ss << endl;
-      ss << "std::vector<double> solution = ";
-      FOREACH(it, solution) {
-        ss << *it << ", ";
-      }
-      ss << endl;
-      RAVELOG_INFO(ss.str());        
-    }  
+  _IKFAST_DISPLAY(cout << "Start of FindIKSolution" << endl;
+                  cout << "std::vector<double> vFreeParameters = ";
+                  FOREACH(it, vFreeParameters) {
+                    cout << *it << ", ";
+                  }
+                  cout << endl;
+                  cout << "std::vector<double> solution = ";
+                  FOREACH(it, solution) {
+                    cout << *it << ", ";
+                  }
+    )
   
     IkSolverBasePtr pIkSolver = GetIkSolver();
     OPENRAVE_ASSERT_FORMAT(!!pIkSolver, "manipulator %s:%s does not have an IK solver set",RobotBasePtr(__probot)->GetName()%GetName(),ORE_Failed);
@@ -236,33 +232,23 @@ bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, cons
 
     bool bool_return;
     if(vFreeParameters.size() == 0) {
-      {
-        stringstream ss;
-        ss << endl << "Call Solve without vfreeparams" << endl;
-        RAVELOG_INFO(ss.str());        
-      }
+      _IKFAST_DISPLAY(cout << endl << "Call Solve without vfreeparams" << endl;)
       bool_return = pIkSolver->Solve(localgoal, solution, filteroptions, psolution);
     }
     else {
-      {
-        stringstream ss;
-        ss << endl << "Call Solve without vfreeparams" << endl;
-        RAVELOG_INFO(ss.str());        
-      }      
+      _IKFAST_DISPLAY(cout << endl << "Call Solve without vfreeparams" << endl;)
       bool_return = pIkSolver->Solve(localgoal, solution, vFreeParameters, filteroptions, psolution);
     }
 
-    {
-      stringstream ss;
-      ss << endl << "Finish calling FindIKSolution" << endl;      
-      ss << "bool_return = " << bool_return << endl;
-      RAVELOG_INFO(ss.str());        
-    }            
+    _IKFAST_DISPLAY(cout << "End of FindIKSolution" << endl
+                    << "bool_return = " << bool_return;
+      )
     return bool_return;
 }
 
 bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, std::vector<std::vector<dReal> >& solutions, int filteroptions) const
 {
+    _IKFAST_DISPLAY(cout << "Start of FindIKSolutions" << endl;)
     return FindIKSolutions(goal, vector<dReal>(), solutions, filteroptions);
 }
 
@@ -303,11 +289,13 @@ bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, con
 
 bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, int filteroptions, IkReturnPtr ikreturn) const
 {
+  _IKFAST_DISPLAY(cout << "Start of FindIKSolution" << endl;)
     return FindIKSolution(goal, vector<dReal>(), filteroptions, ikreturn);
 }
 
 bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, const std::vector<dReal>& vFreeParameters, int filteroptions, IkReturnPtr ikreturn) const
 {
+  _IKFAST_DISPLAY(cout << "Start of FindIKSolution" << endl;)  
     IkSolverBasePtr pIkSolver = GetIkSolver();
     OPENRAVE_ASSERT_FORMAT(!!pIkSolver, "manipulator %s:%s does not have an IK solver set",RobotBasePtr(__probot)->GetName()%GetName(),ORE_Failed);
     RobotBasePtr probot = GetRobot();
@@ -324,7 +312,16 @@ bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, cons
     else {
         localgoal=goal;
     }
-    return vFreeParameters.size() == 0 ? pIkSolver->Solve(localgoal, solution, filteroptions, ikreturn) : pIkSolver->Solve(localgoal, solution, vFreeParameters, filteroptions, ikreturn);
+
+    bool bool_return = false;
+    if( vFreeParameters.size() == 0 ) {
+      bool_return = pIkSolver->Solve(localgoal, solution, filteroptions, ikreturn);
+    }
+    else {
+      bool_return = pIkSolver->Solve(localgoal, solution, vFreeParameters, filteroptions, ikreturn);
+    }
+  _IKFAST_DISPLAY(cout << "End of FindIKSolutions";)
+    return bool_return;
 }
 
 bool RobotBase::Manipulator::FindIKSolutions(const IkParameterization& goal, int filteroptions, std::vector<IkReturnPtr>& vikreturns) const

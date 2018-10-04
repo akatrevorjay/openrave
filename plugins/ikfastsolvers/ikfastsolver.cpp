@@ -585,6 +585,9 @@ protected:
 
     virtual bool Solve(const IkParameterization& rawparam, const std::vector<dReal>& q0, int filteroptions, boost::shared_ptr< std::vector<dReal> > result)
     {
+      _IKFAST_DISPLAY(cout << "Start of Solve" << endl;
+                      cout << "q0 = "; PrintList(q0);
+        )
         std::vector<dReal> q0local = q0; // copy in case result points to q0
         if( !!result ) {
             result->resize(0);
@@ -592,11 +595,13 @@ protected:
         IkReturn ikreturn(IKRA_Success);
         IkReturnPtr pikreturn(&ikreturn,utils::null_deleter());
         if( !Solve(rawparam,q0local,filteroptions,pikreturn) ) {
+          _IKFAST_DISPLAY(cout << "End of Solve (failure)" << endl;)          
             return false;
         }
         if( !!result ) {
             *result = ikreturn._vsolution;
         }
+        _IKFAST_DISPLAY(cout << "End of Solve (success)" << endl;)
         return true;
     }
 
