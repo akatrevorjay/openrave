@@ -28,6 +28,7 @@
 #include <limits>
 #include <utility> // for std::pair
 #include <cstdlib>
+#include <iomanip>
 
 #define IKFASTCPP_DOUBLE
 #include "ikfast++/iksetup.h"
@@ -264,7 +265,8 @@ public:
         return x*x + y*y + z*z;
     }
     inline T lengthsqr4() const {
-        return x*x + y*y + z*z + w*w;
+      _IKFAST_DISPLAY(std::cout << x << ", " << y << ", " << z << ", " << w;)
+      return x*x + y*y + z*z + w*w;
     }
 
     inline void Set3(const T* pvals) {
@@ -331,6 +333,7 @@ public:
         x *= k; y *= k; z *= k; w *= k; return *this;
     }
     inline RaveVector<T>& operator /= (const T _k) {
+      MATH_ASSERT( _k != 0);
         T k=1/_k; x *= k; y *= k; z *= k; w *= k; return *this;
     }
 
@@ -438,18 +441,29 @@ public:
 
     /// t = this * r
     inline RaveTransform<T> operator* (const RaveTransform<T>&r) const {
-        _IKFAST_DISPLAY(std::cout <<
+        _IKFAST_DISPLAY(std::cout << std::setprecision(20) <<
                         "input: this = " << *this << std::endl <<
-                        "          r = " << r;)
+                        "          r = " << r;);
         RaveTransform<T> t;
+        _IKFAST_DISPLAY(std::cout << "  init t = " << t;);
         t.trans = operator*(r.trans);
         t.rot.x = rot.x*r.rot.x - rot.y*r.rot.y - rot.z*r.rot.z - rot.w*r.rot.w;
         t.rot.y = rot.x*r.rot.y + rot.y*r.rot.x + rot.z*r.rot.w - rot.w*r.rot.z;
         t.rot.z = rot.x*r.rot.z + rot.z*r.rot.x + rot.w*r.rot.y - rot.y*r.rot.w;
         t.rot.w = rot.x*r.rot.w + rot.w*r.rot.x + rot.y*r.rot.z - rot.z*r.rot.y;
-        _IKFAST_DISPLAY(std::cout << "output t = " << t;)
+        T tlen = t.rot.lengthsqr4();
+        _IKFAST_DISPLAY(std::cout << "output t = " << t << std::endl << "tlen = " << tlen;);
+        if(!(tlen > 0.99f && tlen < 1.01f)) {
+          _IKFAST_DISPLAY(std::cout << "What is tlen? tlen = " << tlen;);
+          if(tlen == 1.0) {
+            _IKFAST_DISPLAY(std::cout << "Yes, tlen is indeed 1.0: " <<  (tlen > 0.99f && tlen < 1.01f) ;);
+          }
+          else {
+            _IKFAST_DISPLAY(std::cout << " No, tlen is not 1.0: " << (tlen > 0.99f && tlen < 1.01f););
+          }
+          MATH_ASSERT( tlen > 0.99f && tlen < 1.01f );
+        }
         // normalize the transformation
-        MATH_ASSERT( t.rot.lengthsqr4() > 0.99f && t.rot.lengthsqr4() < 1.01f );
         t.rot.normalize4();
         return t;
     }
@@ -813,6 +827,7 @@ template <typename T> inline RaveVector<T> quatFromAxisAngle(const RaveVector<T>
         return RaveVector<T>(T(1),T(0),T(0),T(0));
     }
     angle *= T(0.5);
+    MATH_ASSERT(axislen > 0);
     T sang = MATH_SIN(angle)/axislen;
     return RaveVector<T>(MATH_COS(angle),axis.x*sang,axis.y*sang,axis.z*sang);
 }
@@ -827,6 +842,7 @@ template <typename T> inline RaveVector<T> quatFromAxisAngle(const RaveVector<T>
     if( axislen == 0 ) {
         return RaveVector<T>(T(1),T(0),T(0),T(0));
     }
+    MATH_ASSERT(axislen > 0);    
     T sang = MATH_SIN(axislen*T(0.5))/axislen;
     return RaveVector<T>(MATH_COS(axislen*T(0.5)),axisangle.x*sang,axisangle.y*sang,axisangle.z*sang);
 }
@@ -1009,7 +1025,8 @@ inline RaveVector<T> InterpolateQuatSlerp(const RaveVector<T>& quat0, const Rave
     }
     // Calculate temporary values.
     T halfTheta = MATH_ACOS(cosHalfTheta);
-    T sinHalfTheta = MATH_SQRT(1 - cosHalfTheta*cosHalfTheta);
+    MATH_ASSERT(cosHalfTheta <= 1.0 && cosHalfTheta >=-1.0);    
+    T sinHalfTheta = MATH_SQRT(1.0 - cosHalfTheta*cosHalfTheta);
     // if theta = 180 degrees then result is not fully defined
     // we could rotate around any axis normal to quat0 or qb
     if (MATH_FABS(sinHalfTheta) < 1e-7f) { // fabs is floating point absolute
@@ -1038,6 +1055,7 @@ inline RaveVector<T> InterpolateQuatSlerp(const RaveVector<T>& quat0, const Rave
     if( islongarc ) {
         // have to normalize if going along the big arc
         T f = qm.lengthsqr4();
+        MATH_ASSERT( f > 0 );
         if( f > 1e-7 ) {
             qm /= RaveSqrt(f);
         }

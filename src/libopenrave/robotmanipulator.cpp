@@ -236,7 +236,7 @@ bool RobotBase::Manipulator::FindIKSolution(const IkParameterization& goal, cons
       bool_return = pIkSolver->Solve(localgoal, solution, filteroptions, psolution);
     }
     else {
-      _IKFAST_DISPLAY(cout << endl << "Call Solve without vfreeparams" << endl;)
+      _IKFAST_DISPLAY(cout << endl << "Call Solve with vfreeparams" << endl;)
       bool_return = pIkSolver->Solve(localgoal, solution, vFreeParameters, filteroptions, psolution);
     }
 
