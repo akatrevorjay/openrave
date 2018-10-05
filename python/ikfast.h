@@ -43,6 +43,7 @@
 /// should be the same as ikfast.__version__
 /// if 0x10000000 bit is set, then the iksolver assumes 6D transforms are done without the manipulator offset taken into account (allows to reuse IK when manipulator offset changes)
 #define IKFAST_VERSION 0x10000048
+#define NUMBER_INDICES 5
 
 namespace ikfast {
 
@@ -51,7 +52,6 @@ template <typename T>
 class IkSingleDOFSolutionBase
 {
 public:
-#define NUMBER_INDICES 5
     IkSingleDOFSolutionBase() : fmul(0), foffset(0), freeind(-1), jointtype(0x01), maxsolutions(1) {
       std::fill_n(indices, NUMBER_INDICES, -1);
     }
@@ -69,8 +69,6 @@ public:
       }
       std::cout << ") " << std::endl;
     }
-#undef NUMBER_INDICES
-      
 };
 
 /// \brief The discrete solutions are returned in this structure.
@@ -207,14 +205,23 @@ public:
                 throw std::runtime_error("max solutions for joint not initialized");
             }
             if( _vbasesol[i].maxsolutions > 0 ) {
-                if( _vbasesol[i].indices[0] >= _vbasesol[i].maxsolutions ) {
-                    throw std::runtime_error("index >= max solutions for joint");
-                }
-                if( _vbasesol[i].indices[1] != (unsigned char)-1 && _vbasesol[i].indices[1] >= _vbasesol[i].maxsolutions ) {
-                    throw std::runtime_error("2nd index >= max solutions for joint");
+                for(unsigned int j = 0; j < NUMBER_INDICES; j++)
+                {
+                    if( _vbasesol[i].indices[j] == (unsigned char)-1) {
+                        break;
+                    }
+                    else if( _vbasesol[i].indices[j] >= _vbasesol[i].maxsolutions ) {
+                        this->Print();
+                        throw std::runtime_error("index >= max solutions for joint");
+                    }
                 }
             }
-            if( !std::isfinite(_vbasesol[i].foffset) ) {
+            
+            if( !(std::isfinite(_vbasesol[i].foffset) ||
+                  std::isfinite(_vbasesol[i].fmul) ||
+                  std::isnan(_vbasesol[i].foffset) ||
+                  std::isnan(_vbasesol[i].fmul))
+              ) {
                 throw std::runtime_error("foffset was not finite");
             }
         }
@@ -378,4 +385,5 @@ IKFAST_API const char* GetKinematicsHash();
 }
 #endif
 
+#undef NUMBER_INDICES
 #endif // IKFAST_HAS_LIBRARY
