@@ -1,0 +1,13 @@
+#!/bin/bash
+
+OPENRAVE_DIR=$MUJIN_INSTALL_DIR/lib/python2.7/site-packages/openravepy/_openravepy_0_11
+CURR_IKFAST_DIR=$MUJIN_JHBUILD_CHECKOUT_DIR/openrave/python
+
+cp $CURR_IKFAST_DIR/*.py $OPENRAVE_DIR
+cp $CURR_IKFAST_DIR/databases/*.py $OPENRAVE_DIR/databases
+
+clear && clear
+openrave.py --database inversekinematics \
+                   --robot=$MUJIN_JHBUILD_CHECKOUT_DIR/openrave/src/robots/barrettsegway.robot.xml --iktests=1 #0000 --usecached
+
+# --precision=8

@@ -60,12 +60,17 @@ public:
     unsigned char jointtype; ///< joint type, 0x01 is revolute, 0x11 is slider
     unsigned char maxsolutions; ///< max possible indices, 0 if controlled by free index or a free joint itself
     unsigned char indices[NUMBER_INDICES]; ///< unique index of the solution used to keep track on what part it came from. sometimes a solution can be repeated for different indices. store at least another repeated root
-#undef NUMBER_INDICES
     virtual void Print() const {
       std::cout << "(" << ((jointtype == 0x01) ? "R" : "P") << ", "
-                << (int)freeind << "), " << foffset << ", "
-                << fmul << std::endl;
+                << (int)freeind << "), (" << foffset << ", "
+                << fmul << "), " << (unsigned int) maxsolutions << " (";
+      for(unsigned int i = 0; i < NUMBER_INDICES; i++) {
+          std::cout << (unsigned int) indices[i] << ", ";
+      }
+      std::cout << ") " << std::endl;
     }
+#undef NUMBER_INDICES
+      
 };
 
 /// \brief The discrete solutions are returned in this structure.
